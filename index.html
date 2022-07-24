@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="multi-select-dropdown.css" />
+    <!-- For demo purposes -->
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <title>Multiselect Dropdown Demo</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <h1>Multiselect Dropdown Demo</h1>
+      </div>
+      <div class="container-theme">
+        <button
+          onclick="toggleTheme()"
+          class="toggle-theme"
+          title="Toggle theme"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-circle-half"
+            viewBox="0 0 16 16"
+            style="
+              display: inline-block;
+              vertical-align: -0.125em;
+              height: 1em;
+              width: 1em;
+            "
+          >
+            <path
+              d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="container">
+        <div>
+          <h2>Example 0</h2>
+          <select multiple id="select-0">
+            <option value="Singapore">Singapore</option>
+            <option value="Portland">Portland</option>
+            <option value="Halifax">Halifax</option>
+            <option value="London">London</option>
+            <option value="Seattle">Seattle</option>
+            <option value="Toronto">Toronto</option>
+            <option value="João Pessoa">João Pessoa</option>
+            <option value="New York">New York</option>
+            <option value="Buenos Aires">Buenos Aires</option>
+          </select>
+        </div>
+        <div>
+          <h2>Result 0</h2>
+          <p class="results"></p>
+        </div>
+      </div>
+      <div class="container">
+        <div>
+          <h2>Example 1 (Customized)</h2>
+          <select multiple id="select-1">
+            <option value="Singapore">Singapore</option>
+            <option value="Portland">Portland</option>
+            <option value="Halifax">Halifax</option>
+            <option value="London">London</option>
+            <option value="Seattle">Seattle</option>
+            <option value="Toronto">Toronto</option>
+            <option value="João Pessoa">João Pessoa</option>
+            <option value="New York">New York</option>
+            <option value="Buenos Aires">Buenos Aires</option>
+          </select>
+        </div>
+        <div>
+          <h2>Result 1</h2>
+          <p class="results"></p>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="multi-select-dropdown.js" type="application/javascript"></script>
+  <script>
+    window.addEventListener("load", (event) => {
+      const multiSelectDropdown2 = new MultiSelectDropdown({
+        id: "#select-0",
+      });
+
+      const multiSelectDropdown = new MultiSelectDropdown({
+        id: "#select-1",
+        placeholder: "Clique e selecione",
+        txtSelected: "Selecionados",
+        txtAll: "Marcar Todos",
+        txtRemove: "Remover",
+        txtSearch: "Pesquisar...",
+        txtNotFound: "Não encontrado",
+        minWidth: "320px",
+        selectAll: true,
+      });
+
+      // For demo purposes
+      updateResult();
+
+      for (select of document.querySelectorAll("select")) {
+        select.addEventListener("change", function () {
+          updateResult();
+        });
+      }
+    });
+
+    // For demo purposes
+
+    function updateResult() {
+      const selects = document.querySelectorAll("select");
+
+      for (let i = 0; i < selects.length; i++) {
+        const select = [...selects[i].options]
+          .filter((option) => option.selected)
+          .map((option) => option.value);
+
+        const selected = document.querySelectorAll(".results")[i];
+        selected.innerHTML = `[${select.join(", ")}]`;
+      }
+    }
+
+    function toggleTheme() {
+      document.querySelector("body").classList.toggle("dark");
+    }
+  </script>
+</html>

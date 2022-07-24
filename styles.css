@@ -1,0 +1,96 @@
+/* Generic styles for demo page */
+
+:root {
+  --color-background: #fafafa;
+  --color-text--normal: #0c0c0c;
+  --color-button-border: #6c757d;
+}
+
+.dark {
+  --color-background: #222;
+  --color-text--normal: #e6e6e6;
+  --color-button-border: #6c757d;
+}
+
+html,
+body,
+div {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-background);
+  font-size: 16px;
+}
+
+body,
+div,
+span,
+input,
+select,
+p {
+  color: var(--color-text--normal);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.wrapper {
+  width: 70%;
+  margin: 0 auto;
+}
+
+body > .wrapper {
+  flex-direction: column;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 50px;
+}
+
+.container-theme {
+  display: flex;
+  justify-content: end;
+}
+
+body > .wrapper > .container {
+  width: 100%;
+  max-width: unset;
+  margin: 40px 0;
+}
+
+.container > div {
+  width: 50%;
+}
+
+.results {
+  width: 50%;
+}
+
+#dropdownSelected > span:first-of-type {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.toggle-theme {
+  all: unset;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid;
+  padding: 6px 8px;
+  border-radius: 0.25rem;
+  border-color: var(--color-button-border);
+}
+
+/* At the top level of your code */
+@media screen and (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+  .container > div {
+    width: 100%;
+  }
+}
