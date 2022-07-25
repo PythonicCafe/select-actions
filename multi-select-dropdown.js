@@ -160,11 +160,12 @@ class MultiSelectDropdown {
 
     search.addEventListener("input", () => {
       let notFound = true;
-
-      dropdownListWrapper.querySelector(
-        ".multiselect-dropdown-all-selector"
-      ).style.display = search.value.length ? "none" : "block";
-
+      
+      const allSelectorOption = dropdownListWrapper.querySelector(".multiselect-dropdown-all-selector");
+      if (allSelectorOption){
+        allSelectorOption.style.display = search.value.length ? "none" : "block";
+      }
+      
       dropdownList
         .querySelectorAll(":scope div:not(.multiselect-dropdown-all-selector)")
         .forEach((div) => {
