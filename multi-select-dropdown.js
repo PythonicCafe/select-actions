@@ -11,11 +11,12 @@ class MultiSelectDropdown {
       txtRemove: "Remove",
       txtSearch: "Search field",
       txtNotFound: "Not found",
-      minWidth: "170px",
+      minWidth: "200px",
       maxWidth: "360px",
       maxHeight: "180px",
       borderRadius: 6,
       selectAll: false,
+      showOnlySelectionCount: false,
       ...params,
     };
 
@@ -218,7 +219,13 @@ class MultiSelectDropdown {
 
     let selected = Array.from(multiSelect.selectedOptions);
 
-    if (selected.length > (multiSelect.attributes["max-items"]?.value ?? 5)) {
+    if (
+      (
+        self.config.showOnlySelectionCount || 
+        selected.length > (multiSelect.attributes["max-items"]?.value ?? 5)
+      ) &&
+      selected.length > 0
+      ) {
       div.appendChild(
         self._newElement("span", {
           class: ["optext", "maxselected"],

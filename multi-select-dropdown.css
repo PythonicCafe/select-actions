@@ -64,10 +64,6 @@ span.optext {
   background-color: var(--color-background--option);
   padding: 0 8px 0px 6px;
   cursor: default;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 span.optext .optdel {
@@ -136,9 +132,13 @@ span.placeholder {
 .multiselect-dropdown-list {
   color: var(--color-text--normal);
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   height: 100%;
   max-height: 160px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .multiselect-dropdown-list::-webkit-scrollbar {
