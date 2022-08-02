@@ -7,6 +7,7 @@ class MultiSelectDropdown {
       useStyles: true,
       placeholder: "Click and Select",
       txtSelected: "Selected",
+      txtSelectedSingular: "Selected",
       txtAll: "All",
       txtRemove: "Remove",
       txtSearch: "Search field",
@@ -217,20 +218,22 @@ class MultiSelectDropdown {
       .querySelectorAll("span.optext, span.placeholder")
       .forEach((placeholder) => div.removeChild(placeholder));
 
-    let selected = Array.from(multiSelect.selectedOptions);
+    const selected = Array.from(multiSelect.selectedOptions);
+    const selectedLength = selected.length;
 
     if (
       (
         self.config.showOnlySelectionCount || 
-        selected.length > (multiSelect.attributes["max-items"]?.value ?? 5)
+        selectedLength > (multiSelect.attributes["max-items"]?.value ?? 5)
       ) &&
-      selected.length > 0
+      selectedLength > 0
       ) {
+      const txtAfterCounter = selectedLength > 1 ? self.config.txtSelected : self.config.txtSelectedSingular;
       div.appendChild(
         self._newElement("span", {
           class: ["optext", "maxselected"],
-          text: selected.length + " " + self.config.txtSelected,
-          title: `${self.config.txtSelected}: \n[ ${selected
+          text: selectedLength + " " + txtAfterCounter,
+          title: `${txtAfterCounter}: \n[ ${selected
             .map((option) => option.text)
             .join(", ")} ]`,
         })
@@ -246,7 +249,7 @@ class MultiSelectDropdown {
           span.prepend(
             self._newElement("span", {
               class: "optdel",
-              text: "x",
+              text: "X",
               title: self.config.txtRemove,
               onclick: (e) => {
                 span.srcElement.optionElement.dispatchEvent(new Event("click"));
