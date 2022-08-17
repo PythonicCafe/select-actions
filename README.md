@@ -2,6 +2,10 @@
 
 Simple & customizable multi-select picker, written in vanilla JS
 
+## Demo
+
+https://marcmatias.github.io/js-multiselect
+
 ## Use
 
 Example of use
