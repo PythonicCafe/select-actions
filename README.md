@@ -37,6 +37,7 @@ Example of use
 
 `index.html` Have some examples 
 
-## Source/Reference
+## References
 
-Based on [kiosion.github.io/js-multiselect-dropdown/](https://github.com/kiosion/js-multiselect-dropdown)
+- [kiosion.github.io/js-multiselect-dropdown/](https://github.com/kiosion/js-multiselect-dropdown)
+- [Boostrap select styles](https://getbootstrap.com/docs/5.0/forms/select/)
