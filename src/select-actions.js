@@ -46,7 +46,6 @@ export default class  SelectActions {
 
     let div = this._newElement("div", { class: "multiselect-dropdown" });
 
-    multiSelect.style.display = "none";
     multiSelect.parentNode.insertBefore(div, multiSelect.nextSibling);
 
     let dropdownListWrapper = this._newElement("div", {
