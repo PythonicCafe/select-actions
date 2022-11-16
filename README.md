@@ -6,34 +6,44 @@ Simple & customizable multi/single-select picker, written in vanilla JS
 
 [https://marcmatias.github.io/select-actions](https://marcmatias.github.io/select-actions)
 
-Example of use
+## Installation
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        ...
-        <link rel="stylesheet" type="text/css" href="dist/select-actions.css" />
-    <head>
-    <body>
-        <select multiple id="#select-0">
-            <option value="Option1">Option1</option>
-            <option value="Option2">Option2</option>
-        </select>
-        ...
-        <script src="dist/select-actions.js" type="application/javascript"></script>
-        <script type="application/javascript">
-            window.addEventListener("load", (event) => {
-                const select-actions = new MultiSelectDropdown({
-                    id: "#select-0",
-                });
-            });
-        </script>
-    </body>
-</html>
+```bash
+# yarn or npm
+yarn add select-actions
 ```
 
-`example/index.html` Have some examples
+Or direct import in HTML
+
+```html
+<!-- Add to head HTML tag -->
+<link rel="stylesheet" href="/dist/select-actions.min.css" />
+<!-- Add to the bottom of body HTML tag -->
+<script src="/dist/select-actions.js"></script>
+
+<!-- or directly from unpkg -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/select-actions@lastest/dist/select-actions.min.css"
+/>
+<script src="https://unpkg.com/select-actions@latest/dist/select-actions.min.js"></script>
+
+```
+
+# Run
+
+```js
+import SelectActions from "select-actions";
+
+// Only this lines when included with script HTML tag
+window.addEventListener("load", (event) => {
+    const select-actions = new SelectActions({
+        id: "#select-0",
+    });
+})
+```
+
+More examples in `example/index.html`
 
 ## References
 
