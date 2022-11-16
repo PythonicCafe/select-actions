@@ -27,7 +27,7 @@
   --color-mdd-text-accent: #cccbcb;
   --color-mdd-bg-accent: #292929;
   --color-mdd-text-placeholder: #a1a1a1;
-  --icon-mdd-chevron: url("data:image/svg+xml,<svg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><path fill='%23ccc' fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z' /></svg>");
+  --icon-mdd-chevron: url("data:image/svg+xml,<svg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><path  fill='%23ccc' fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z' /></svg>");
   --icon-mdd-search: url("data:image/svg+xml,<svg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><path fill='%23ccc' d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/></svg>");
 }
 
@@ -47,6 +47,7 @@
   width: 100%;
   cursor: pointer;
   box-sizing: border-box;
+  padding-right: 25px;
 }
 
 span.optext,
@@ -59,28 +60,33 @@ span.placeholder {
 }
 
 span.optext {
-  color: var(--color-mdd-text-normal);
   background-color: var(--color-mdd-bg-option);
+  color: var(--color-mdd-text-normal);
   cursor: default;
   display: block;
-  white-space: nowrap;
+  font-family: system-ui, -apple-system, sans-serif;
+  hyphens: auto;
   overflow: hidden;
-  text-overflow: ellipsis;
   padding: 0 0.2rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
 }
 
 span.optext .optdel {
-  font-size: 0.7em;
-  cursor: pointer;
-  text-align: center;
-  padding: 0.1rem 0.2rem;
-  margin-right: 8px;
-  font-weight: bold;
-  line-height: 1.5rem;
-  transition: all 0.2s ease-in-out;
+  background-color: var(--color-mdd-bg-accent);
   border-radius: var(--border-mdd-radius-small);
   color: var(--color-mdd-text-accent);
-  background-color: var(--color-mdd-bg-accent);
+  cursor: pointer;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 0rem;
+  margin-right: 8px;
+  padding: 0px 4px;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
 }
 
 span.optext .optdel:hover {
@@ -167,6 +173,8 @@ span.placeholder {
   padding: 6px;
   margin: 6px 8px 6px 6px;
   transition: 100ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  word-break: break-all;
+  hyphens: auto;
 }
 
 .multiselect-dropdown-list div:hover {
@@ -174,7 +182,7 @@ span.placeholder {
 }
 
 .multiselect-dropdown span.maxselected {
-  width: 100%;
+  width: calc(100% - 15px);
 }
 
 .multiselect-dropdown-all-selector {

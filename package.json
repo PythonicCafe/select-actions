@@ -1,0 +1,36 @@
+{
+  "name": "select-actions",
+  "type": "module",
+  "version": "0.0.2",
+  "private": true,
+  "description": "Simple & customizable multi/single-select picker, written in vanilla JS",
+  "source": "src/index.js",
+  "exports": {
+    "default": "./dist/select-actions.js"
+  },
+  "amdName": "SelectActions",
+  "scripts": {
+    "build": "microbundle -o dist/select-actions.min.js -f umd --sourcemap false --no-pkg-main",
+    "watch": "yarn run build watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcmatias/js-multiselect.git"
+  },
+  "keywords": ["select", "multiselect", "picker", "search", "dropdown"],
+  "author": "",
+  "license": "(LGPL-3.0)",
+  "bugs": {
+    "url": "https://github.com/marcmatias/js-multiselect/issues"
+  },
+  "files": [
+    "dist/select-actions.min.js",
+    "dist/select-actions.min.css",
+    "README.md"
+  ],
+
+  "homepage": "https://github.com/marcmatias/js-multiselect#readme",
+  "devDependencies": {
+    "microbundle": "^0.15.1"
+  }
+}

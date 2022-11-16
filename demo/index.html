@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="multi-select-dropdown.css" />
+    <link rel="stylesheet" type="text/css" href="../dist/select-actions.css" />
     <!-- For demo purposes -->
-    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="stylesheet" type="text/css" href="demo-purposes.css" />
     <title>Multiselect Dropdown Demo</title>
   </head>
   <body>
@@ -42,7 +42,7 @@
       </div>
       <div class="container">
         <div>
-          <h2>Example 0</h2>
+          <h2>Example A</h2>
           <select multiple id="select-0">
             <option value="Singapore">Singapore</option>
             <option value="Portland">Portland</option>
@@ -56,13 +56,14 @@
           </select>
         </div>
         <div>
-          <h2>Result 0</h2>
+          <h2>Result A</h2>
           <p class="results"></p>
         </div>
       </div>
+      <hr>
       <div class="container">
         <div>
-          <h2>Example 1 (Customized)</h2>
+          <h2>Example B (Customized)</h2>
           <select multiple id="select-1">
             <option value="Singapore">Singapore</option>
             <option value="Portland">Portland</option>
@@ -76,20 +77,23 @@
           </select>
         </div>
         <div>
-          <h2>Result 1</h2>
+          <h2>Result B (Customized)</h2>
           <p class="results"></p>
         </div>
       </div>
     </div>
   </body>
-  <script src="multi-select-dropdown.js" type="application/javascript"></script>
+  <script src="../dist/select-actions.js"></script>
   <script>
     window.addEventListener("load", (event) => {
-      const multiSelectDropdown2 = new MultiSelectDropdown({
+
+      // Simple example
+      const selectActions1 = new SelectActions({
         id: "#select-0",
       });
 
-      const multiSelectDropdown = new MultiSelectDropdown({
+      // Example with text translation and customizations setted
+      const selectActions = new SelectActions({
         id: "#select-1",
         placeholder: "Clique e selecione",
         txtSelected: "Selecionados",
@@ -104,7 +108,10 @@
         showOnlySelectionCount: true,
       });
 
-      // For demo purposes
+      /*
+        -- For demo purposes --
+        Loop bind all selects with updateResult class
+      */
       updateResult();
 
       for (select of document.querySelectorAll("select")) {
@@ -114,8 +121,10 @@
       }
     });
 
-    // For demo purposes
-
+    /*
+      -- For demo purposes --
+      This will update result values in example html
+    */
     function updateResult() {
       const selects = document.querySelectorAll("select");
 

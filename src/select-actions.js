@@ -1,4 +1,4 @@
-class MultiSelectDropdown {
+export default class  SelectActions {
   constructor(params) {
     this.config = {
       id: undefined,

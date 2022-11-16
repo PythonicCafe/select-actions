@@ -52,7 +52,7 @@ body > .wrapper {
 
 .container-theme {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 body > .wrapper > .container {
@@ -83,6 +83,13 @@ body > .wrapper > .container {
   padding: 6px 8px;
   border-radius: 0.25rem;
   border-color: var(--color-button-border);
+}
+
+hr {
+  border: 1px solid;
+  background-color: var(--color-text--normal);
+  opacity: 50%;
+  margin: 3rem 0rem;
 }
 
 /* At the top level of your code */
