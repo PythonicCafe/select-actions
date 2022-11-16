@@ -1,12 +1,12 @@
 {
   "name": "select-actions",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "description": "Simple & customizable multi/single-select picker, written in vanilla JS",
   "source": "src/index.js",
   "exports": {
-    "default": "./dist/select-actions.js"
+    "default": "./dist/select-actions.min.js"
   },
   "amdName": "SelectActions",
   "scripts": {
