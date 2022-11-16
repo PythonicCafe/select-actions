@@ -1,8 +1,10 @@
-# SelectAction
+# SelectActions
 
 Simple & customizable multi/single-select picker, written in vanilla JS
 
-## Use
+## Demo
+
+[https://marcmatias.github.io/select-actions](https://marcmatias.github.io/select-actions)
 
 Example of use
 
@@ -11,7 +13,7 @@ Example of use
 <html lang="en">
     <head>
         ...
-        <link rel="stylesheet" type="text/css" href="multi-select-dropdown.css" />
+        <link rel="stylesheet" type="text/css" href="dist/select-actions.css" />
     <head>
     <body>
         <select multiple id="#select-0">
@@ -19,7 +21,7 @@ Example of use
             <option value="Option2">Option2</option>
         </select>
         ...
-        <script src="select-actions.js" type="application/javascript"></script>
+        <script src="dist/select-actions.js" type="application/javascript"></script>
         <script type="application/javascript">
             window.addEventListener("load", (event) => {
                 const select-actions = new MultiSelectDropdown({
@@ -31,7 +33,7 @@ Example of use
 </html>
 ```
 
-`demo/index.html` Have some examples
+`example/index.html` Have some examples
 
 ## References
 
