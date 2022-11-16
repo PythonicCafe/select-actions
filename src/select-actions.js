@@ -162,12 +162,12 @@ export default class  SelectActions {
 
     search.addEventListener("input", () => {
       let notFound = true;
-      
+
       const allSelectorOption = dropdownListWrapper.querySelector(".multiselect-dropdown-all-selector");
       if (allSelectorOption){
         allSelectorOption.style.display = search.value.length ? "none" : "block";
       }
-      
+
       dropdownList
         .querySelectorAll(":scope div:not(.multiselect-dropdown-all-selector)")
         .forEach((div) => {
@@ -223,7 +223,7 @@ export default class  SelectActions {
 
     if (
       (
-        self.config.showOnlySelectionCount || 
+        self.config.showOnlySelectionCount ||
         selectedLength > (multiSelect.attributes["max-items"]?.value ?? 5)
       ) &&
       selectedLength > 0
