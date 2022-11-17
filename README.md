@@ -24,7 +24,7 @@ Or direct import in HTML
 <!-- or directly from unpkg -->
 <link
   rel="stylesheet"
-  href="https://unpkg.com/select-actions@lastest/dist/select-actions.min.css"
+  href="https://unpkg.com/select-actions@latest/dist/select-actions.min.css"
 />
 <script src="https://unpkg.com/select-actions@latest/dist/select-actions.min.js"></script>
 ```
