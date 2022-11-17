@@ -11,13 +11,26 @@
   "amdName": "SelectActions",
   "scripts": {
     "build": "microbundle -o dist/select-actions.min.js -f umd --sourcemap false --no-pkg-main",
-    "watch": "yarn run build watch"
+    "watch": "yarn run build watch",
+    "test": "jest --detectOpenHandles --forceExit",
+    "test-watch": "jest --detectOpenHandles --watchAll"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marcmatias/js-multiselect.git"
   },
-  "keywords": ["select", "multiselect", "picker", "search", "dropdown"],
+  "keywords": [
+    "select",
+    "multiselect",
+    "picker",
+    "search",
+    "dropdown"
+  ],
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./jestGlobalSetup.js"
+    ]
+  },
   "author": "",
   "license": "(LGPL-3.0)",
   "bugs": {
@@ -28,9 +41,14 @@
     "dist/select-actions.min.css",
     "README.md"
   ],
-
   "homepage": "https://github.com/marcmatias/js-multiselect#readme",
   "devDependencies": {
-    "microbundle": "^0.15.1"
-  }
+    "jest": "^29.3.1",
+    "lint": "^0.7.0",
+    "lite-server": "^2.6.1",
+    "microbundle": "^0.15.1",
+    "prettier": "^2.7.1",
+    "puppeteer": "^19.2.2"
+  },
+  "dependencies": {}
 }
