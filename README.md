@@ -19,7 +19,7 @@ Or direct import in HTML
 <!-- Add to head HTML tag -->
 <link rel="stylesheet" href="/dist/select-actions.min.css" />
 <!-- Add to the bottom of body HTML tag -->
-<script src="/dist/select-actions.js"></script>
+<script src="/dist/select-actions.min.js"></script>
 
 <!-- or directly from unpkg -->
 <link
@@ -29,7 +29,7 @@ Or direct import in HTML
 <script src="https://unpkg.com/select-actions@latest/dist/select-actions.min.js"></script>
 ```
 
-# Run
+## Run
 
 ```js
 import SelectActions from "select-actions";
