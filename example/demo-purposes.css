@@ -22,6 +22,7 @@ div {
 body {
   background-color: var(--color-background);
   font-size: 16px;
+  transition: background-color .3s ease-in-out;
 }
 
 body,
@@ -53,6 +54,7 @@ body > .wrapper {
 .container-theme {
   display: flex;
   justify-content: flex-end;
+  gap: .5rem;
 }
 
 body > .wrapper > .container {
@@ -79,10 +81,14 @@ body > .wrapper > .container {
   all: unset;
   cursor: pointer;
   position: relative;
-  border: 1px solid;
-  padding: 6px 8px;
+  padding: .7rem;
   border-radius: 0.25rem;
-  border-color: var(--color-button-border);
+  transition: background-color .3s ease-in-out;
+  line-height: 0rem;
+}
+
+.toggle-theme:hover {
+  background-color: #cccccc5c;
 }
 
 hr {

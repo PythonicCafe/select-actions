@@ -50,7 +50,3 @@ function updateResult() {
     selected.innerHTML = `[${select.join(", ")}]`;
   }
 }
-
-function toggleTheme() {
-  document.querySelector("body").classList.toggle("dark");
-}
