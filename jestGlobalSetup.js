@@ -7,21 +7,17 @@ const appTestGraphBrowser = "http://localhost:3000/example/index.html";
 // Options to browser create
 const options = {
   defaultViewport: null,
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--window-size=1920,1080",
-  ]
+  args: ["--no-sandbox", "--disable-setuid-sandbox", "--window-size=1920,1080"],
 };
 
 // Setup Jest
 
 let browser;
 
-beforeAll(async() => {
+beforeAll(async () => {
   // Setting browser
   browser = await puppeteer.launch({
-    ...options
+    ...options,
   });
 });
 

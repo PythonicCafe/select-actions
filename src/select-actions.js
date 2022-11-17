@@ -1,4 +1,4 @@
-export default class  SelectActions {
+export default class SelectActions {
   constructor(params) {
     this.config = {
       id: undefined,
@@ -162,9 +162,13 @@ export default class  SelectActions {
     search.addEventListener("input", () => {
       let notFound = true;
 
-      const allSelectorOption = dropdownListWrapper.querySelector(".multiselect-dropdown-all-selector");
-      if (allSelectorOption){
-        allSelectorOption.style.display = search.value.length ? "none" : "block";
+      const allSelectorOption = dropdownListWrapper.querySelector(
+        ".multiselect-dropdown-all-selector"
+      );
+      if (allSelectorOption) {
+        allSelectorOption.style.display = search.value.length
+          ? "none"
+          : "block";
       }
 
       dropdownList
@@ -221,13 +225,14 @@ export default class  SelectActions {
     const selectedLength = selected.length;
 
     if (
-      (
-        self.config.showOnlySelectionCount ||
-        selectedLength > (multiSelect.attributes["max-items"]?.value ?? 5)
-      ) &&
+      (self.config.showOnlySelectionCount ||
+        selectedLength > (multiSelect.attributes["max-items"]?.value ?? 5)) &&
       selectedLength > 0
-      ) {
-      const txtAfterCounter = selectedLength > 1 ? self.config.txtSelected : self.config.txtSelectedSingular;
+    ) {
+      const txtAfterCounter =
+        selectedLength > 1
+          ? self.config.txtSelected
+          : self.config.txtSelectedSingular;
       div.appendChild(
         self._newElement("span", {
           class: ["optext", "maxselected"],

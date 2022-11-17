@@ -53,7 +53,7 @@ select[multiple] {
   cursor: pointer;
   box-sizing: border-box;
   padding-right: 25px;
-  transition: background-color .3s ease-in-out, color .3s ease-in-out;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 span.optext,
@@ -79,7 +79,7 @@ span.optext {
   font-family: system-ui, -apple-system, sans-serif;
   hyphens: auto;
   overflow: hidden;
-  padding: 0rem .4rem 0rem .3rem;
+  padding: 0rem 0.4rem 0rem 0.3rem;
   text-overflow: ellipsis;
   white-space: nowrap;
   word-break: break-all;
@@ -112,7 +112,7 @@ span.placeholder {
   z-index: 100;
   border-radius: var(--border-mdd-radius-base);
   border: solid 1px var(--color-mdd-border);
-  transition: border-color .3s ease-in-out;
+  transition: border-color 0.3s ease-in-out;
   display: none;
   margin: -1px;
   position: absolute;

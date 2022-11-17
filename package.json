@@ -11,9 +11,11 @@
   "amdName": "SelectActions",
   "scripts": {
     "build": "microbundle -o dist/select-actions.min.js -f umd --sourcemap false --no-pkg-main",
-    "watch": "yarn run build watch",
+    "eslint": "eslint src/*",
+    "prettier": "prettier --write .",
     "test": "jest --detectOpenHandles --forceExit",
-    "test-watch": "jest --detectOpenHandles --watchAll"
+    "test-watch": "jest --detectOpenHandles --watchAll",
+    "watch": "yarn run build watch"
   },
   "repository": {
     "type": "git",
