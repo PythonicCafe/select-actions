@@ -26,6 +26,7 @@ describe("Simple select interactions", () => {
   });
 
   test("Select and unselect first element", async () => {
+    await page.waitForSelector(".multiselect-dropdown");
     await page.click(".multiselect-dropdown");
     await page.click("input[type='checkbox']");
     await page.click("input[type='checkbox']");
@@ -51,6 +52,7 @@ describe("Simple select interactions", () => {
     await page.click("h2");
 
     // Check if selected result is being showed correct
+    await page.waitForSelector(".maxselected");
     const results = await page.evaluate(
       () => document.querySelector(".maxselected").innerText
     );
@@ -59,18 +61,23 @@ describe("Simple select interactions", () => {
 
   test("Select all multiselect customized", async () => {
     // Click in the second dropdown
+    await page.waitForSelector(".multiselect-dropdown");
     const dropdown = await page.$$('.multiselect-dropdown');
     await dropdown[1].click();
 
     // Click select all button
-    await page.click(".multiselect-dropdown-all-selector>input[type='checkbox']");
+    const selectAll = ".multiselect-dropdown-all-selector>input[type='checkbox']";
+    await page.waitForSelector(selectAll);
+    await page.click(selectAll);
 
     // Check if selected result is being showed correct
+    await page.waitForSelector(".maxselected");
     const results = await page.evaluate(
       () => document.querySelector(".maxselected").innerText
     );
     expect(results).toBe('9 Selecionados');
   });
+
   test("Unselect all multiselect customized", async () => {
     // Click in the second dropdown
     const dropdown = await page.$$('.multiselect-dropdown');
