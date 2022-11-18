@@ -168,7 +168,7 @@ export default class SelectActions {
           optionElement.addEventListener("click", () => {
             optionElement.srcElement.selected = true;
             multiSelect.dispatchEvent(new Event("change"));
-            self._closeSelect(div, multiSelect);
+            self._closeSelect(div);
           })
 
           option.optionElement = optionElement;
@@ -239,14 +239,14 @@ export default class SelectActions {
         !div.contains(event.target) &&
         div.dropdownListWrapper.style.display === "flex"
       ) {
-        self._closeSelect(div, multiSelect);
+        self._closeSelect(div);
         this._refresh(div, multiSelect);
       }
     });
 
     div.addEventListener("keydown", (event) => {
       if (event.key === 'Escape') {
-        self._closeSelect(div, multiSelect);
+        self._closeSelect(div);
         this._refresh(div, multiSelect);
       }
     });
@@ -286,8 +286,9 @@ export default class SelectActions {
     search.select();
   }
 
-  _closeSelect(div, multiSelect) {
+  _closeSelect(div) {
     const self = this;
+
     // Remove position styles
     const dropDownStyle = div.dropdownListWrapper.style;
     const searchInput = div.querySelector(".multiselect-dropdown-search").style;
@@ -296,7 +297,6 @@ export default class SelectActions {
     dropDownStyle.bottom = null;
     searchInput.borderTop = "0px";
     searchInput.borderBottom = "0px";
-
     // Removing resizeObserver that defines serch position
     if (self.resizeObserver) {
       self.resizeObserver.unobserve(div);
@@ -304,9 +304,8 @@ export default class SelectActions {
   }
 
   _isOutOfViewport(el) {
-    var bounding = el.getBoundingClientRect();
-
-    var out = {};
+    const bounding = el.getBoundingClientRect();
+    const out = {};
     out.top = bounding.top < 0;
     out.left = bounding.left < 0;
     out.bottom = bounding.bottom > (window.innerHeight || document.documentElement.clientHeight);
