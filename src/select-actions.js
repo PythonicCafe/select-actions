@@ -44,7 +44,7 @@ export default class SelectActions {
   _createDropdown(multiSelect) {
     const self = this;
 
-    let div = this._newElement("div", { class: "multiselect-dropdown" });
+    let div = this._newElement("div", { class: "multiselect-dropdown", "tabIndex": "0" });
 
     multiSelect.parentNode.insertBefore(div, multiSelect.nextSibling);
 
@@ -200,18 +200,55 @@ export default class SelectActions {
       }
     });
 
+    // EventListener to open select
     div.addEventListener("click", () => {
-      div.dropdownListWrapper.style.display = "block";
-      search.focus();
-      search.select();
+      self._openSelect(div, search);
     });
 
-    document.addEventListener("click", (e) => {
-      if (!div.contains(e.target)) {
-        dropdownListWrapper.style.display = "none";
-        self._refresh(div, multiSelect);
+    div.addEventListener("keypress", (event) => {
+      if (event.key === 'Enter') {
+        self._openSelect(div, search);
       }
     });
+
+    // EventListener to close select if open and clickout
+    document.addEventListener("click", (event) => {
+      if (
+        !div.contains(event.target) &&
+        div.dropdownListWrapper.style.display === "block"
+      ) {
+        self._closeSelect(div, multiSelect);
+      }
+    });
+
+    div.addEventListener("keydown", (event) => {
+      if (event.key === 'Escape') {
+        self._closeSelect(div, multiSelect);
+      }
+    });
+  }
+
+  _openSelect (div, search) {
+    div.dropdownListWrapper.style.display = "block";
+    // TODO: if outside window show content on top
+    search.focus();
+    search.select();
+  }
+
+  _closeSelect(div, multiSelect) {
+    div.dropdownListWrapper.style.display = "none";
+    this._refresh(div, multiSelect);
+  }
+
+  isOutOfViewport(el) {
+    var bounding = el.getBoundingClientRect();
+
+    var out = {};
+    out.top = bounding.top < 0;
+    out.left = bounding.left < 0;
+    out.bottom = bounding.bottom > (window.innerHeight || document.documentElement.clientHeight);
+    out.right = bounding.right > (window.innerWidth || document.documentElement.clientWidth);
+    return out.top || out.left || out.bottom || out.right;
   }
 
   _refresh(div, multiSelect) {
@@ -255,11 +292,17 @@ export default class SelectActions {
               class: "optdel",
               text: "X",
               title: self.config.txtRemove,
-              onclick: (e) => {
-                span.srcElement.optionElement.dispatchEvent(new Event("click"));
-                self._refresh(div, multiSelect);
-                e.stopPropagation();
+              onclick: (event) => {
+                self._deleteOpt(span, div, multiSelect);
+                event.stopPropagation();
               },
+              onkeydown: (event) => {
+                if(event.key === 'Enter'){
+                  self._deleteOpt(span, div, multiSelect);
+                  e.stopPropagation();
+                }
+              },
+              tabIndex: 0
             })
           );
         }
@@ -279,32 +322,40 @@ export default class SelectActions {
     }
   }
 
+  _deleteOpt(span, div, multiSelect) {
+    span.srcElement.optionElement.dispatchEvent(new Event("click"));
+    self._refresh(div, multiSelect);
+  }
+
   _newElement(tag, params) {
-    let element = document.createElement(tag);
+    let el = document.createElement(tag);
     if (params) {
       Object.keys(params).forEach((key) => {
         if (key === "class") {
           Array.isArray(params[key])
             ? params[key].forEach((o) =>
-                o !== "" ? element.classList.add(o) : 0
+                o !== "" ? el.classList.add(o) : 0
               )
             : params[key] !== ""
-            ? element.classList.add(params[key])
+            ? el.classList.add(params[key])
             : 0;
         } else if (key === "style") {
           Object.keys(params[key]).forEach((value) => {
-            element.style[value] = params[key][value];
+            el.style[value] = params[key][value];
           });
         } else if (key === "text") {
           params[key] === ""
-            ? (element.innerHTML = "&nbsp;")
-            : (element.innerText = params[key]);
+            ? (el.innerHTML = "&nbsp;")
+            : (el.innerText = params[key]);
+        } else if (key === "tabindex") {
+          console.log(params[key])
+            el[key] = params[key];
         } else {
-          element[key] = params[key];
+          el[key] = params[key];
         }
       });
     }
-    return element;
+    return el;
   }
 
   _createStyles() {

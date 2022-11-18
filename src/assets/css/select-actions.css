@@ -38,7 +38,7 @@ select[multiple] {
 
 .multiselect-dropdown {
   position: relative;
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   padding: 6px 8px 6px 6px;
   gap: 6px;
@@ -50,6 +50,7 @@ select[multiple] {
   background-position: right 6px center;
   background-size: 16px 12px;
   width: 100%;
+  min-height: 37px;
   cursor: pointer;
   box-sizing: border-box;
   padding-right: 25px;
@@ -58,7 +59,7 @@ select[multiple] {
 
 span.optext,
 span.placeholder {
-  display: inline-flex;
+  display: flex;
   vertical-align: middle;
   justify-content: center;
   align-items: center;
@@ -66,16 +67,10 @@ span.placeholder {
   border-radius: var(--border-mdd-radius-small);
 }
 
-span.placeholder {
-  line-height: 1.6rem;
-}
-
 span.optext {
-  line-height: 1.5333rem;
   background-color: var(--color-mdd-bg-option);
   color: var(--color-mdd-text-normal);
   cursor: default;
-  display: block;
   font-family: system-ui, -apple-system, sans-serif;
   hyphens: auto;
   overflow: hidden;
@@ -114,7 +109,7 @@ span.placeholder {
   border: solid 1px var(--color-mdd-border);
   transition: border-color 0.3s ease-in-out;
   display: none;
-  margin: -1px;
+  margin: -0.6px;
   position: absolute;
   top: 0;
   left: 0;
@@ -137,7 +132,7 @@ span.placeholder {
   background-position: right 12px center;
   background-size: 14px 14px;
   box-sizing: border-box;
-  line-height: 1.6rem;
+  height: 37px;
 }
 
 .multiselect-dropdown-search::placeholder {
