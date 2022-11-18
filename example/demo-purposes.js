@@ -1,5 +1,6 @@
 window.addEventListener("load", (event) => {
-  // Simple example
+
+  // Simple multiselect example
   const selectActions1 = new SelectActions({
     id: "#select-0",
   });
@@ -18,6 +19,11 @@ window.addEventListener("load", (event) => {
     maxWidth: "350px",
     selectAll: true,
     showOnlySelectionCount: true,
+  });
+
+  // Simple select example
+  const selectActions2 = new SelectActions({
+    id: "#select-2",
   });
 
   /*
