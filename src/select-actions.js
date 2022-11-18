@@ -26,8 +26,8 @@ export default class SelectActions {
 
   init() {
     const self = this;
-
     const selectID = self.config.id;
+
     if (selectID) {
       self._createDropdown(document.querySelector(selectID));
     } else {
@@ -60,10 +60,10 @@ export default class SelectActions {
       style: {
         width: "100%",
         display: self.config.search
-          ? "block"
-          : multiSelect.attributes.search?.value === "true"
-          ? "block"
-          : "none",
+        ? "block"
+        : multiSelect.attributes.search?.value === "true"
+        ? "block"
+        : "none",
       },
       placeholder: self.config.txtSearch,
     });
@@ -78,9 +78,46 @@ export default class SelectActions {
       self._refresh(div, multiSelect);
     });
 
+    // Creating multiple or simple
+    div.previousElementSibling.multiple ?
+      self._populateMultiSelect(dropdownList, dropdownListWrapper, multiSelect) :
+      self._populateSimpleSelect(div, dropdownList, multiSelect);
+
+    div.dropdownListWrapper = dropdownListWrapper;
+    self._refresh(div, multiSelect);
+    self._settingEventListeners(div, search, dropdownList, dropdownListWrapper, multiSelect);
+  }
+
+  _populateSimpleSelect(div, dropdownList, multiSelect) {
+    const self = this;
+    Array.from(multiSelect.options).map((option) => {
+      let optionElement = self._newElement("div", {
+        srcElement: option,
+      });
+      optionElement.appendChild(
+        self._newElement("label", { text: option.text })
+      );
+
+      dropdownList.appendChild(optionElement);
+
+      if(!option.disabled) {
+        optionElement.addEventListener("click", () => {
+          optionElement.srcElement.selected = true;
+          multiSelect.dispatchEvent(new Event("change"));
+          self._closeSelect(div);
+        })
+
+        option.optionElement = optionElement;
+      }
+    });
+  }
+
+  _populateMultiSelect(dropdownList, dropdownListWrapper, multiSelect) {
+    const self = this;
+
     if (
       self.config.selectAll ||
-      multiSelect.attributes["select-all"]?.value === "true"
+      multiSelect.attributes["select-all"]
     ) {
       let optionElementAll = self._newElement("div", {
         class: "multiselect-dropdown-all-selector",
@@ -116,69 +153,45 @@ export default class SelectActions {
 
       dropdownList.appendChild(optionElementAll);
     }
-
-    if (div.previousElementSibling.multiple) {
-      Array.from(multiSelect.options).map((option) => {
-        let optionElement = self._newElement("div", {
-          srcElement: option,
-        });
-        let optionCheckbox = self._newElement("input", {
-          type: "checkbox",
-          checked: option.selected,
-        });
-        optionElement.appendChild(optionCheckbox);
-        optionElement.appendChild(
-          self._newElement("label", { text: option.text })
-        );
-
-        optionElement.addEventListener("click", () => {
-          const optionElementAll = dropdownListWrapper.querySelector(
-            ".multiselect-dropdown-all-selector"
-          );
-          if (optionElementAll) {
-            optionElementAll.querySelector("input").checked = false;
-          }
-
-          optionElement.querySelector("input").checked =
-            !optionElement.querySelector("input").checked;
-          optionElement.srcElement.selected = !optionElement.srcElement.selected;
-          multiSelect.dispatchEvent(new Event("change"));
-        });
-
-        optionCheckbox.addEventListener("click", () => {
-          optionCheckbox.checked = !optionCheckbox.checked;
-        });
-
-        option.optionElement = optionElement;
-
-        dropdownList.appendChild(optionElement);
+    Array.from(multiSelect.options).map((option) => {
+      let optionElement = self._newElement("div", {
+        srcElement: option,
       });
-    } else {
-      Array.from(multiSelect.options).map((option) => {
-        let optionElement = self._newElement("div", {
-          srcElement: option,
-        });
-        optionElement.appendChild(
-          self._newElement("label", { text: option.text })
+      let optionCheckbox = self._newElement("input", {
+        type: "checkbox",
+        checked: option.selected,
+      });
+      optionElement.appendChild(optionCheckbox);
+      optionElement.appendChild(
+        self._newElement("label", { text: option.text })
+      );
+
+      optionElement.addEventListener("click", () => {
+        const optionElementAll = dropdownListWrapper.querySelector(
+          ".multiselect-dropdown-all-selector"
         );
-
-        dropdownList.appendChild(optionElement);
-
-        if(!option.disabled) {
-          optionElement.addEventListener("click", () => {
-            optionElement.srcElement.selected = true;
-            multiSelect.dispatchEvent(new Event("change"));
-            self._closeSelect(div);
-          })
-
-          option.optionElement = optionElement;
+        if (optionElementAll) {
+          optionElementAll.querySelector("input").checked = false;
         }
+
+        optionElement.querySelector("input").checked =
+          !optionElement.querySelector("input").checked;
+        optionElement.srcElement.selected = !optionElement.srcElement.selected;
+        multiSelect.dispatchEvent(new Event("change"));
       });
-    }
 
-    div.dropdownListWrapper = dropdownListWrapper;
-    self._refresh(div, multiSelect);
+      optionCheckbox.addEventListener("click", () => {
+        optionCheckbox.checked = !optionCheckbox.checked;
+      });
 
+      option.optionElement = optionElement;
+
+      dropdownList.appendChild(optionElement);
+    });
+  }
+
+  _settingEventListeners(div, search, dropdownList, dropdownListWrapper, multiSelect) {
+    const self = this;
     search.addEventListener("input", () => {
       let notFound = true;
 
@@ -221,7 +234,7 @@ export default class SelectActions {
     });
 
     // EventListener to open select
-    div.addEventListener("click", () => {
+    div.addEventListener("click", (event) => {
       if (div !== event.target && !event.target.classList.contains("maxselected")) return;
       self._openSelect(div, search);
     });
@@ -240,14 +253,14 @@ export default class SelectActions {
         div.dropdownListWrapper.style.display === "flex"
       ) {
         self._closeSelect(div);
-        this._refresh(div, multiSelect);
+        self._refresh(div, multiSelect);
       }
     });
 
     div.addEventListener("keydown", (event) => {
       if (event.key === 'Escape') {
         self._closeSelect(div);
-        this._refresh(div, multiSelect);
+        self._refresh(div, multiSelect);
       }
     });
   }
@@ -422,6 +435,7 @@ export default class SelectActions {
     return el;
   }
 
+  // This allow user to send customizations from instatiations
   _createStyles() {
     const self = this;
 
