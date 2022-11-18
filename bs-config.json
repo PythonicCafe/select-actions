@@ -8,7 +8,7 @@
     "./src/assets/css/*.css",
     "./*.{html}",
     "./example/*.{html,css,js}",
-    "./dist/*.{js}"
+    "./dist/*.{js, css}"
   ],
   "watchOptions": { "ignored": "node_modules" },
   "server": {
