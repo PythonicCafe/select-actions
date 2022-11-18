@@ -43,20 +43,17 @@ export default class SelectActions {
 
   _createDropdown(multiSelect) {
     const self = this;
-
-    let div = this._newElement("div", { class: "multiselect-dropdown", "tabIndex": "0" });
-
-    multiSelect.parentNode.insertBefore(div, multiSelect.nextSibling);
-
-    let dropdownListWrapper = this._newElement("div", {
+    const div = this._newElement("div", { class: "multiselect-dropdown", "tabIndex": "0" });
+    const dropdownListWrapper = this._newElement("div", {
       class: "multiselect-dropdown-list-wrapper",
     });
-
-    let dropdownList = this._newElement("div", {
+    const dropdownList = this._newElement("div", {
       class: "multiselect-dropdown-list",
     });
 
-    let search = this._newElement("input", {
+    multiSelect.parentNode.insertBefore(div, multiSelect.nextSibling);
+
+    const search = this._newElement("input", {
       class: ["multiselect-dropdown-search"].concat([
         self.config.searchInput?.class ?? "form-control",
       ]),
@@ -202,10 +199,12 @@ export default class SelectActions {
 
     // EventListener to open select
     div.addEventListener("click", () => {
+      if (div !== event.target && !event.target.classList.contains("maxselected")) return;
       self._openSelect(div, search);
     });
 
     div.addEventListener("keypress", (event) => {
+      if (div !== event.target) return;
       if (event.key === 'Enter') {
         self._openSelect(div, search);
       }
@@ -215,7 +214,7 @@ export default class SelectActions {
     document.addEventListener("click", (event) => {
       if (
         !div.contains(event.target) &&
-        div.dropdownListWrapper.style.display === "block"
+        div.dropdownListWrapper.style.display === "flex"
       ) {
         self._closeSelect(div, multiSelect);
       }
@@ -229,18 +228,59 @@ export default class SelectActions {
   }
 
   _openSelect (div, search) {
-    div.dropdownListWrapper.style.display = "block";
-    // TODO: if outside window show content on top
+    const self = this;
+    const dropDownStyle = div.dropdownListWrapper.style;
+    dropDownStyle.display = "flex";
+
+    if(this._isOutOfViewport(div.dropdownListWrapper)) {
+      dropDownStyle.flexDirection = "column-reverse";
+      div.querySelector(".multiselect-dropdown-search").style
+        .borderTop = "solid 1px var(--color-mdd-border)";
+
+      // This will update search input position if field size changes
+      let prevHeight;
+      self.resizeObserver = new ResizeObserver(changes => {
+        for(const change of changes){
+          if(change.contentRect.height === prevHeight) return
+          prevHeight = change.contentRect.height
+
+          let position = parseInt(self.config.maxHeight.replace("px", "")) + 2;
+          position = div.clientHeight > 35 ? position - 35 : position;
+          dropDownStyle.top = `-${position}px`;
+        }
+      });
+      self.resizeObserver.observe(div);
+    } else {
+      dropDownStyle.flexDirection = "column";
+      div.querySelector(".multiselect-dropdown-search").style
+        .borderBottom = "solid 1px var(--color-mdd-border)";
+    }
+
     search.focus();
     search.select();
   }
 
   _closeSelect(div, multiSelect) {
-    div.dropdownListWrapper.style.display = "none";
+    const self = this;
+    // Remove position styles
+    const dropDownStyle = div.dropdownListWrapper.style;
+    const searchInput = div.querySelector(".multiselect-dropdown-search").style;
+    dropDownStyle.display = "none";
+    dropDownStyle.top = 0;
+    searchInput.borderTop = "0px";
+    searchInput.borderBottom = "0px";
+
+    // Removing resizeObserver that defines serch position
+    if (self.resizeObserver) {
+      console.log("acessou")
+      self.resizeObserver.unobserve(div);
+    }
+
+    // Refresh
     this._refresh(div, multiSelect);
   }
 
-  isOutOfViewport(el) {
+  _isOutOfViewport(el) {
     var bounding = el.getBoundingClientRect();
 
     var out = {};
@@ -324,7 +364,7 @@ export default class SelectActions {
 
   _deleteOpt(span, div, multiSelect) {
     span.srcElement.optionElement.dispatchEvent(new Event("click"));
-    self._refresh(div, multiSelect);
+    this._refresh(div, multiSelect);
   }
 
   _newElement(tag, params) {
@@ -348,7 +388,6 @@ export default class SelectActions {
             ? (el.innerHTML = "&nbsp;")
             : (el.innerText = params[key]);
         } else if (key === "tabindex") {
-          console.log(params[key])
             el[key] = params[key];
         } else {
           el[key] = params[key];

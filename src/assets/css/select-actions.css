@@ -109,7 +109,7 @@ span.placeholder {
   border: solid 1px var(--color-mdd-border);
   transition: border-color 0.3s ease-in-out;
   display: none;
-  margin: -0.6px;
+  margin: -.8px -1px;
   position: absolute;
   top: 0;
   left: 0;
@@ -118,12 +118,12 @@ span.placeholder {
 }
 
 .multiselect-dropdown-search {
+  border-radius: .25rem;
   color: var(--color-mdd-text-normal);
   padding: 5px 34px 6px 5px;
   border-top-left-radius: var(--border-mdd-radius-base);
   border-top-right-radius: var(--border-mdd-radius-base);
   border: solid 1px transparent;
-  border-bottom: solid 1px var(--color-mdd-border);
   fill: inherit;
   font-size: inherit;
   background-color: var(--color-mdd-bg);
@@ -191,6 +191,7 @@ span.placeholder {
 
 .multiselect-dropdown span.maxselected {
   width: calc(100% - 15px);
+  cursor: pointer;
 }
 
 .multiselect-dropdown-all-selector {
