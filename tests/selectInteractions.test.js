@@ -60,7 +60,7 @@ describe("Simple select interactions", () => {
   test("Select all multiselect customized", async () => {
     // Click in the second dropdown
     const dropdown = await page.$$('.multiselect-dropdown');
-    dropdown[1].click();
+    await dropdown[1].click();
 
     // Click select all button
     await page.click(".multiselect-dropdown-all-selector>input[type='checkbox']");
