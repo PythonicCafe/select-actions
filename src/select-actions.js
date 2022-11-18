@@ -31,8 +31,8 @@ export default class SelectActions {
     if (selectID) {
       self._createDropdown(document.querySelector(selectID));
     } else {
-      for (const multiSelect of document.querySelectorAll("select[multiple]")) {
-        self._createDropdown(multiSelect);
+      for (const select of document.querySelectorAll("select")) {
+        self._createDropdown(select);
       }
     }
 
@@ -117,41 +117,64 @@ export default class SelectActions {
       dropdownList.appendChild(optionElementAll);
     }
 
-    Array.from(multiSelect.options).map((option) => {
-      let optionElement = self._newElement("div", {
-        srcElement: option,
-      });
-      let optionCheckbox = self._newElement("input", {
-        type: "checkbox",
-        checked: option.selected,
-      });
-      optionElement.appendChild(optionCheckbox);
-      optionElement.appendChild(
-        self._newElement("label", { text: option.text })
-      );
-
-      optionElement.addEventListener("click", () => {
-        const optionElementAll = dropdownListWrapper.querySelector(
-          ".multiselect-dropdown-all-selector"
+    if (div.previousElementSibling.multiple) {
+      Array.from(multiSelect.options).map((option) => {
+        let optionElement = self._newElement("div", {
+          srcElement: option,
+        });
+        let optionCheckbox = self._newElement("input", {
+          type: "checkbox",
+          checked: option.selected,
+        });
+        optionElement.appendChild(optionCheckbox);
+        optionElement.appendChild(
+          self._newElement("label", { text: option.text })
         );
-        if (optionElementAll) {
-          optionElementAll.querySelector("input").checked = false;
+
+        optionElement.addEventListener("click", () => {
+          const optionElementAll = dropdownListWrapper.querySelector(
+            ".multiselect-dropdown-all-selector"
+          );
+          if (optionElementAll) {
+            optionElementAll.querySelector("input").checked = false;
+          }
+
+          optionElement.querySelector("input").checked =
+            !optionElement.querySelector("input").checked;
+          optionElement.srcElement.selected = !optionElement.srcElement.selected;
+          multiSelect.dispatchEvent(new Event("change"));
+        });
+
+        optionCheckbox.addEventListener("click", () => {
+          optionCheckbox.checked = !optionCheckbox.checked;
+        });
+
+        option.optionElement = optionElement;
+
+        dropdownList.appendChild(optionElement);
+      });
+    } else {
+      Array.from(multiSelect.options).map((option) => {
+        let optionElement = self._newElement("div", {
+          srcElement: option,
+        });
+        optionElement.appendChild(
+          self._newElement("label", { text: option.text })
+        );
+
+        dropdownList.appendChild(optionElement);
+
+        if(!option.disabled) {
+          optionElement.addEventListener("click", () => {
+            optionElement.srcElement.selected = true;
+            multiSelect.dispatchEvent(new Event("change"));
+            self._closeSelect(div, multiSelect);
+          })
+
+          option.optionElement = optionElement;
         }
-
-        optionElement.querySelector("input").checked =
-          !optionElement.querySelector("input").checked;
-        optionElement.srcElement.selected = !optionElement.srcElement.selected;
-        multiSelect.dispatchEvent(new Event("change"));
       });
-
-      optionCheckbox.addEventListener("click", () => {
-        optionCheckbox.checked = !optionCheckbox.checked;
-      });
-
-      option.optionElement = optionElement;
-
-      dropdownList.appendChild(optionElement);
-    });
+    }
 
     div.dropdownListWrapper = dropdownListWrapper;
     self._refresh(div, multiSelect);
@@ -217,12 +240,14 @@ export default class SelectActions {
         div.dropdownListWrapper.style.display === "flex"
       ) {
         self._closeSelect(div, multiSelect);
+        this._refresh(div, multiSelect);
       }
     });
 
     div.addEventListener("keydown", (event) => {
       if (event.key === 'Escape') {
         self._closeSelect(div, multiSelect);
+        this._refresh(div, multiSelect);
       }
     });
   }
@@ -247,6 +272,7 @@ export default class SelectActions {
           let position = parseInt(self.config.maxHeight.replace("px", "")) + 2;
           position = div.clientHeight > 35 ? position - 35 : position;
           dropDownStyle.top = `-${position}px`;
+          dropDownStyle.bottom = `0px`;
         }
       });
       self.resizeObserver.observe(div);
@@ -267,17 +293,14 @@ export default class SelectActions {
     const searchInput = div.querySelector(".multiselect-dropdown-search").style;
     dropDownStyle.display = "none";
     dropDownStyle.top = 0;
+    dropDownStyle.bottom = null;
     searchInput.borderTop = "0px";
     searchInput.borderBottom = "0px";
 
     // Removing resizeObserver that defines serch position
     if (self.resizeObserver) {
-      console.log("acessou")
       self.resizeObserver.unobserve(div);
     }
-
-    // Refresh
-    this._refresh(div, multiSelect);
   }
 
   _isOutOfViewport(el) {
@@ -294,8 +317,9 @@ export default class SelectActions {
   _refresh(div, multiSelect) {
     const self = this;
 
+    // Cleaning field to populate
     div
-      .querySelectorAll("span.optext, span.placeholder")
+      .querySelectorAll("span.sa-text, span.sa-ph")
       .forEach((placeholder) => div.removeChild(placeholder));
 
     const selected = Array.from(multiSelect.selectedOptions);
@@ -312,7 +336,7 @@ export default class SelectActions {
           : self.config.txtSelectedSingular;
       div.appendChild(
         self._newElement("span", {
-          class: ["optext", "maxselected"],
+          class: ["sa-text", "optext", "maxselected"],
           text: selectedLength + " " + txtAfterCounter,
           title: `${txtAfterCounter}: \n[ ${selected
             .map((option) => option.text)
@@ -320,16 +344,18 @@ export default class SelectActions {
         })
       );
     } else {
+      const isMultiple = div.previousElementSibling.multiple;
       selected.map((option) => {
         let span = self._newElement("span", {
-          class: "optext",
+          class: isMultiple ? ["sa-text", "optext"] : ["sa-text"],
           text: option.text,
           srcElement: option,
         });
-        if (!self.config.hideX) {
+
+        if (!self.config.hideX && isMultiple) {
           span.prepend(
             self._newElement("span", {
-              class: "optdel",
+              class: ["sa-del", "optdel"],
               text: "X",
               title: self.config.txtRemove,
               onclick: (event) => {
@@ -353,7 +379,7 @@ export default class SelectActions {
     if (multiSelect.selectedOptions?.length === 0) {
       div.appendChild(
         self._newElement("span", {
-          class: "placeholder",
+          class: ["sa-ph", "placeholder"],
           text:
             multiSelect.attributes?.placeholder?.value ??
             self.config.placeholder,
