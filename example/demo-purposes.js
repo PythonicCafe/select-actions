@@ -17,7 +17,6 @@ window.addEventListener("load", (event) => {
     txtNotFound: "Não encontrado",
     minWidth: "260px",
     maxWidth: "350px",
-    selectAll: true,
     showOnlySelectionCount: true,
   });
 
