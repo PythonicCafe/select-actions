@@ -15,7 +15,7 @@
     "prettier": "prettier --write .",
     "test": "jest --detectOpenHandles --forceExit",
     "test-watch": "jest --detectOpenHandles --watchAll",
-    "watch": "yarn run build watch"
+    "watch": "microbundle -o dist/select-actions.min.js -f umd --no-pkg-main watch"
   },
   "repository": {
     "type": "git",
