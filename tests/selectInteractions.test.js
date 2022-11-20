@@ -8,7 +8,7 @@ describe("Simple select interactions", () => {
   });
 
   test("Select first element", async () => {
-    await page.click(".multiselect-dropdown");
+    await page.click(".sa-dropdown");
     await page.click("input[type='checkbox']");
 
     // Check if selected result is really selected
@@ -26,8 +26,8 @@ describe("Simple select interactions", () => {
   });
 
   test("Select and unselect first element", async () => {
-    await page.waitForSelector(".multiselect-dropdown");
-    await page.click(".multiselect-dropdown");
+    await page.waitForSelector(".sa-dropdown");
+    await page.click(".sa-dropdown");
     await page.click("input[type='checkbox']");
     await page.click("input[type='checkbox']");
 
@@ -39,10 +39,10 @@ describe("Simple select interactions", () => {
   });
 
   test("Select six options", async () => {
-    await page.click(".multiselect-dropdown");
+    await page.click(".sa-dropdown");
 
     page.evaluate(() => {
-      const dropdown = document.querySelector(".multiselect-dropdown")
+      const dropdown = document.querySelector(".sa-dropdown")
       let checkboxes = dropdown.querySelectorAll("input[type='checkbox']");
       checkboxes.forEach(el => {
         el.click();
@@ -59,14 +59,14 @@ describe("Simple select interactions", () => {
     expect(results).toBe('9 Selected');
   });
 
-  test("Select all multiselect customized", async () => {
+  test("Select all sa customized", async () => {
     // Click in the second dropdown
-    await page.waitForSelector(".multiselect-dropdown");
-    const dropdown = await page.$$('.multiselect-dropdown');
+    await page.waitForSelector(".sa-dropdown");
+    const dropdown = await page.$$('.sa-dropdown');
     await dropdown[1].click();
 
     // Click select all button
-    const selectAll = ".multiselect-dropdown-all-selector>input[type='checkbox']";
+    const selectAll = ".sa-all-selector";
     await page.waitForSelector(selectAll);
     await page.click(selectAll);
 
@@ -78,12 +78,12 @@ describe("Simple select interactions", () => {
     expect(results).toBe('9 Selecionados');
   });
 
-  test("Unselect all multiselect customized", async () => {
+  test("Unselect all sa customized", async () => {
     // Click in the second dropdown
-    const dropdown = await page.$$('.multiselect-dropdown');
+    const dropdown = await page.$$('.sa-dropdown');
     await dropdown[1].click();
 
-    const optionPath = ".multiselect-dropdown-all-selector>input[type='checkbox']";
+    const optionPath = ".sa-all-selector>input[type='checkbox']";
 
     // Click select all button
     await page.click(optionPath);
@@ -98,11 +98,13 @@ describe("Simple select interactions", () => {
   });
 
   test("Type in search field, execute a search", async () => {
-    await page.click(".multiselect-dropdown");
+    await page.click(".sa-dropdown");
     // Type a search
     await page.type("input[placeholder='Search field']", 'João Pessoa');
     // Select searched element
-    await page.click(".multiselect-dropdown-list>div:not([style*='display: none'])>input[type='checkbox']");
+    const selector = ".sa-dropdown-list>div:not([style*='display: none'])>input[type='checkbox']";
+    await page.waitForSelector(selector);
+    await page.click(selector);
 
     // Check if selected result is being showed in reults example
     const result = await page.evaluate(
