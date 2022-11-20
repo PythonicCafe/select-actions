@@ -31,8 +31,8 @@
   --icon-search: url("data:image/svg+xml,<svg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><path fill='%23ccc' d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/></svg>");
 }
 
-/* 
- * Hide allselects to show library select 
+/*
+ * Hide allselects to show library select
  *
  * TODO: set a class in selects we want to apply library
  * */
@@ -84,7 +84,7 @@
   word-break: break-all;
 }
 
-.sa-option-text .sa-option-del {
+.sa-option-del {
   background-color: var(--color-bg-accent);
   border-radius: var(--border-radius-small);
   color: var(--color-text-accent);
@@ -97,15 +97,17 @@
   text-align: center;
   transition: all 0.2s ease-in-out;
   user-select: none;
+  pointer-events: auto;
+  line-height: 16px;
 }
 
-.sa-option-text .sa-option-del:hover {
-  pointer-events: none;
+.sa-option-del:hover {
   background-color: var(--color-text-grey);
 }
 
 .sa-placeholder {
   color: var(--color-text-placeholder);
+  pointer-events: none;
 }
 
 .sa-dropdown-list-wrapper {
@@ -218,4 +220,9 @@
 .sa-disabled-option:hover>label {
   cursor: auto;
   background-color: transparent;
+}
+
+.sa-text {
+  line-height: 1.45rem;
+  pointer-events: none;
 }
