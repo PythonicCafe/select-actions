@@ -200,9 +200,9 @@
   background-color: var(--color-bg-option-hover);
 }
 
-.sa-dropdown span.maxselected {
+.sa-dropdown .sa-maxselected {
   width: calc(100% - 15px);
-  cursor: pointer;
+  pointer-events: auto;;
 }
 
 .sa-all-selector {

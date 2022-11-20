@@ -197,7 +197,7 @@ export default class SelectActions {
 
     // EventListener to open select
     div.addEventListener("click", (event) => {
-      if (div !== event.target && !event.target.classList.contains("maxselected")) return;
+      if (div !== event.target && !event.target.classList.contains("sa-maxselected")) return;
       self._openSelect(div, search);
     });
 
@@ -368,7 +368,7 @@ export default class SelectActions {
           : self.config.txtSelectedSingular;
       div.appendChild(
         self._newElement("span", {
-          class: ["sa-text", "sa-option-text", "maxselected"],
+          class: ["sa-text", "sa-option-text", "sa-maxselected"],
           text: selectedLength + " " + txtAfterCounter,
           title: `${txtAfterCounter}: \n[ ${selected
             .map((option) => option.text)
