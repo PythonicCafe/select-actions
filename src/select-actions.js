@@ -351,7 +351,7 @@ export default class SelectActions {
 
     // Cleaning field to populate
     div
-      .querySelectorAll("span.sa-text, span.sa-ph")
+      .querySelectorAll(".sa-text, span.sa-ph")
       .forEach((placeholder) => div.removeChild(placeholder));
 
     const selected = Array.from(multiSelect.selectedOptions);

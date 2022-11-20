@@ -59,7 +59,6 @@
   box-sizing: border-box;
   padding-right: 25px;
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-  cursor: pointer;
 }
 
 .sa-option-text,
@@ -101,6 +100,7 @@
 }
 
 .sa-option-text .sa-option-del:hover {
+  pointer-events: none;
   background-color: var(--color-text-grey);
 }
 
