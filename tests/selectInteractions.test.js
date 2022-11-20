@@ -39,6 +39,7 @@ describe("Simple select interactions", () => {
   });
 
   test("Select six options", async () => {
+    await page.waitForSelector(".sa-dropdown");
     await page.click(".sa-dropdown");
 
     page.evaluate(() => {
@@ -62,13 +63,12 @@ describe("Simple select interactions", () => {
   test("Select all sa customized", async () => {
     // Click in the second dropdown
     await page.waitForSelector(".sa-dropdown");
-    const dropdown = await page.$$('.sa-dropdown');
+    let dropdown = await page.$$('.sa-dropdown');
     await dropdown[1].click();
 
     // Click select all button
-    const selectAll = ".sa-all-selector";
-    await page.waitForSelector(selectAll);
-    await page.click(selectAll);
+    await page.waitForFunction(() => document.querySelector(".sa-all-selector"));
+    await page.click(".sa-all-selector");
 
     // Check if selected result is being showed correct
     await page.waitForSelector(".maxselected");
@@ -80,10 +80,12 @@ describe("Simple select interactions", () => {
 
   test("Unselect all sa customized", async () => {
     // Click in the second dropdown
+    await page.waitForSelector(".sa-dropdown");
     const dropdown = await page.$$('.sa-dropdown');
     await dropdown[1].click();
 
-    const optionPath = ".sa-all-selector>input[type='checkbox']";
+    const optionPath = ".sa-all-selector";
+    await page.waitForSelector(".sa-dropdown");
 
     // Click select all button
     await page.click(optionPath);
@@ -98,6 +100,7 @@ describe("Simple select interactions", () => {
   });
 
   test("Type in search field, execute a search", async () => {
+    await page.waitForSelector(".sa-dropdown");
     await page.click(".sa-dropdown");
     // Type a search
     await page.type("input[placeholder='Search field']", 'João Pessoa');
