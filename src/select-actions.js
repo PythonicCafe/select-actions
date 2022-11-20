@@ -28,33 +28,29 @@ export default class SelectActions {
     const self = this;
     const selectID = self.config.id;
 
-    if (selectID) {
-      self._createDropdown(document.querySelector(selectID));
-    } else {
-      for (const select of document.querySelectorAll("select")) {
-        self._createDropdown(select);
-      }
-    }
-
     if (this.config.useStyles) {
       self._createStyles();
     }
+
+    selectID ?
+      self._createDropdown(document.querySelector(selectID)) :
+      document.querySelectorAll("select").map(el => self._createDropdown(el));
   }
 
   _createDropdown(multiSelect) {
     const self = this;
-    const div = this._newElement("div", { class: "multiselect-dropdown", "tabIndex": "0" });
+    const div = this._newElement("div", { class: "sa-dropdown", "tabIndex": "0" });
     const dropdownListWrapper = this._newElement("div", {
-      class: "multiselect-dropdown-list-wrapper",
+      class: "sa-dropdown-list-wrapper",
     });
     const dropdownList = this._newElement("div", {
-      class: "multiselect-dropdown-list",
+      class: "sa-dropdown-list",
     });
 
     multiSelect.parentNode.insertBefore(div, multiSelect.nextSibling);
 
     const search = this._newElement("input", {
-      class: ["multiselect-dropdown-search"].concat([
+      class: ["sa-dropdown-search"].concat([
         self.config.searchInput?.class ?? "form-control",
       ]),
       style: {
@@ -74,6 +70,7 @@ export default class SelectActions {
 
     dropdownList.innerHTML = "";
 
+    // First execution after field creation
     multiSelect.addEventListener("change", function () {
       self._refresh(div, multiSelect);
     });
@@ -81,18 +78,19 @@ export default class SelectActions {
     // Creating multiple or simple
     div.previousElementSibling.multiple ?
       self._populateMultiSelect(dropdownList, dropdownListWrapper, multiSelect) :
-      self._populateSimpleSelect(div, dropdownList, multiSelect);
+      self._populateSimpleSelect(div, dropdownList, multiSelect, search, dropdownListWrapper);
 
     div.dropdownListWrapper = dropdownListWrapper;
     self._refresh(div, multiSelect);
     self._settingEventListeners(div, search, dropdownList, dropdownListWrapper, multiSelect);
   }
 
-  _populateSimpleSelect(div, dropdownList, multiSelect) {
+  _populateSimpleSelect(div, dropdownList, multiSelect, search, dropdownListWrapper) {
     const self = this;
     Array.from(multiSelect.options).map((option) => {
       let optionElement = self._newElement("div", {
         srcElement: option,
+        class: option.disabled ? ["sa-option", "sa-unsearchable", "sa-disabled-option"] : "sa-option",
       });
       optionElement.appendChild(
         self._newElement("label", { text: option.text })
@@ -104,7 +102,7 @@ export default class SelectActions {
         optionElement.addEventListener("click", () => {
           optionElement.srcElement.selected = true;
           multiSelect.dispatchEvent(new Event("change"));
-          self._closeSelect(div);
+          self._closeSelect(div, search, dropdownList, dropdownListWrapper);
         })
 
         option.optionElement = optionElement;
@@ -120,7 +118,7 @@ export default class SelectActions {
       multiSelect.attributes["select-all"]
     ) {
       let optionElementAll = self._newElement("div", {
-        class: "multiselect-dropdown-all-selector",
+        class: ["sa-unsearchable", "sa-all-selector", "sa-option"],
       });
 
       let optionCheckbox = self._newElement("input", { type: "checkbox" });
@@ -136,7 +134,7 @@ export default class SelectActions {
         let ch = optionElementAll.querySelector("input").checked;
         dropdownList
           .querySelectorAll(
-            ":scope > div:not(.multiselect-dropdown-all-selector)"
+            ":scope > div:not(.sa-unsearchable)"
           )
           .forEach((i) => {
             if (i.style.display !== "none") {
@@ -156,6 +154,7 @@ export default class SelectActions {
     Array.from(multiSelect.options).map((option) => {
       let optionElement = self._newElement("div", {
         srcElement: option,
+        class: "sa-option"
       });
       let optionCheckbox = self._newElement("input", {
         type: "checkbox",
@@ -168,7 +167,7 @@ export default class SelectActions {
 
       optionElement.addEventListener("click", () => {
         const optionElementAll = dropdownListWrapper.querySelector(
-          ".multiselect-dropdown-all-selector"
+          ".sa-unsearchable"
         );
         if (optionElementAll) {
           optionElementAll.querySelector("input").checked = false;
@@ -193,44 +192,7 @@ export default class SelectActions {
   _settingEventListeners(div, search, dropdownList, dropdownListWrapper, multiSelect) {
     const self = this;
     search.addEventListener("input", () => {
-      let notFound = true;
-
-      const allSelectorOption = dropdownListWrapper.querySelector(
-        ".multiselect-dropdown-all-selector"
-      );
-      if (allSelectorOption) {
-        allSelectorOption.style.display = search.value.length
-          ? "none"
-          : "block";
-      }
-
-      dropdownList
-        .querySelectorAll(":scope div:not(.multiselect-dropdown-all-selector)")
-        .forEach((div) => {
-          let innerText = div.querySelector("label").innerText.toLowerCase();
-          if (innerText.includes(search.value.toLowerCase())) {
-            div.style.display = "flex";
-            notFound = false;
-          } else if (!Object.values(div.classList).includes("not-found")) {
-            div.style.display = "none";
-          }
-        });
-
-      const nfElement = dropdownList.querySelector(".not-found");
-      if (notFound) {
-        if (nfElement) {
-          return;
-        }
-        const nfDiv = self._newElement("div", { class: "not-found" });
-        const nfLabel = self._newElement("label", {
-          text: self.config.txtNotFound,
-        });
-
-        nfDiv.appendChild(nfLabel);
-        dropdownList.appendChild(nfDiv);
-      } else if (nfElement) {
-        nfElement.remove();
-      }
+      self._updateOptionsDropdown(search, dropdownList, dropdownListWrapper);
     });
 
     // EventListener to open select
@@ -252,28 +214,83 @@ export default class SelectActions {
         !div.contains(event.target) &&
         div.dropdownListWrapper.style.display === "flex"
       ) {
-        self._closeSelect(div);
+        self._closeSelect(div, search, dropdownList, dropdownListWrapper);
         self._refresh(div, multiSelect);
       }
     });
 
     div.addEventListener("keydown", (event) => {
       if (event.key === 'Escape') {
-        self._closeSelect(div);
+        self._closeSelect(div, search, dropdownList, dropdownListWrapper);
         self._refresh(div, multiSelect);
       }
     });
   }
 
-  _openSelect (div, search) {
+  _updateOptionsDropdown(search, dropdownList, dropdownListWrapper) {
+    const self = this;
+    const searchLength = search.value.length;
+    if (searchLength < 3 && searchLength > 0 ) {
+      return;
+    }
+
+    let notFound = true;
+
+    const unsearchable = dropdownListWrapper.querySelector(".sa-unsearchable");
+    if (unsearchable) {
+      unsearchable.style.display = searchLength ? "none" : "flex";
+    }
+
+    dropdownList
+      .querySelectorAll(":scope div:not(.sa-unsearchable)")
+      .forEach((div) => {
+        let innerText = div.querySelector("label")
+          .innerText.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        if (
+          innerText.includes(search.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
+        ) {
+          div.style.display = "flex";
+          notFound = false;
+        } else if (!Object.values(div.classList).includes("sa-not-found")) {
+          div.style.display = "none";
+        }
+      });
+
+    const nfElement = dropdownList.querySelector(".sa-not-found");
+
+    // Add not found message
+    if (notFound) {
+      // Not found message alrady placed
+      if (nfElement) {
+        return;
+      }
+
+      const nfDiv = self._newElement("div", { class: ["sa-option", "sa-not-found"] });
+      const nfLabel = self._newElement("label", {
+        text: self.config.txtNotFound,
+      });
+
+      nfDiv.appendChild(nfLabel);
+      dropdownList.appendChild(nfDiv);
+
+      return;
+    }
+
+    if (nfElement) {
+      // Remove not found message
+      nfElement.remove();
+    }
+  }
+
+  _openSelect(div, search) {
     const self = this;
     const dropDownStyle = div.dropdownListWrapper.style;
     dropDownStyle.display = "flex";
 
     if(this._isOutOfViewport(div.dropdownListWrapper)) {
       dropDownStyle.flexDirection = "column-reverse";
-      div.querySelector(".multiselect-dropdown-search").style
-        .borderTop = "solid 1px var(--color-mdd-border)";
+      div.querySelector(".sa-dropdown-search").style
+        .borderTop = "solid 1px var(--color-border)";
 
       // This will update search input position if field size changes
       let prevHeight;
@@ -291,25 +308,28 @@ export default class SelectActions {
       self.resizeObserver.observe(div);
     } else {
       dropDownStyle.flexDirection = "column";
-      div.querySelector(".multiselect-dropdown-search").style
-        .borderBottom = "solid 1px var(--color-mdd-border)";
+      div.querySelector(".sa-dropdown-search").style
+        .borderBottom = "solid 1px var(--color-border)";
     }
 
     search.focus();
     search.select();
   }
 
-  _closeSelect(div) {
+  _closeSelect(div, search, dropdownList, dropdownListWrapper) {
     const self = this;
 
     // Remove position styles
     const dropDownStyle = div.dropdownListWrapper.style;
-    const searchInput = div.querySelector(".multiselect-dropdown-search").style;
+    const searchInput = div.querySelector(".sa-dropdown-search");
+    const searchInputStyle = searchInput.style;
     dropDownStyle.display = "none";
     dropDownStyle.top = 0;
     dropDownStyle.bottom = null;
-    searchInput.borderTop = "0px";
-    searchInput.borderBottom = "0px";
+    searchInputStyle.borderTop = "0px";
+    searchInputStyle.borderBottom = "0px";
+    searchInput.value = "";
+    self._updateOptionsDropdown(search, dropdownList, dropdownListWrapper);
     // Removing resizeObserver that defines serch position
     if (self.resizeObserver) {
       self.resizeObserver.unobserve(div);
@@ -348,7 +368,7 @@ export default class SelectActions {
           : self.config.txtSelectedSingular;
       div.appendChild(
         self._newElement("span", {
-          class: ["sa-text", "optext", "maxselected"],
+          class: ["sa-text", "sa-option-text", "maxselected"],
           text: selectedLength + " " + txtAfterCounter,
           title: `${txtAfterCounter}: \n[ ${selected
             .map((option) => option.text)
@@ -359,7 +379,7 @@ export default class SelectActions {
       const isMultiple = div.previousElementSibling.multiple;
       selected.map((option) => {
         let span = self._newElement("span", {
-          class: isMultiple ? ["sa-text", "optext"] : ["sa-text"],
+          class: isMultiple ? ["sa-text", "sa-option-text"] : ["sa-text"],
           text: option.text,
           srcElement: option,
         });
@@ -367,7 +387,7 @@ export default class SelectActions {
         if (!self.config.hideX && isMultiple) {
           span.prepend(
             self._newElement("span", {
-              class: ["sa-del", "optdel"],
+              class: ["sa-del", "sa-option-del"],
               text: "X",
               title: self.config.txtRemove,
               onclick: (event) => {
@@ -391,7 +411,7 @@ export default class SelectActions {
     if (multiSelect.selectedOptions?.length === 0) {
       div.appendChild(
         self._newElement("span", {
-          class: ["sa-ph", "placeholder"],
+          class: ["sa-ph", "sa-placeholder"],
           text:
             multiSelect.attributes?.placeholder?.value ??
             self.config.placeholder,
@@ -425,8 +445,6 @@ export default class SelectActions {
           params[key] === ""
             ? (el.innerHTML = "&nbsp;")
             : (el.innerText = params[key]);
-        } else if (key === "tabindex") {
-            el[key] = params[key];
         } else {
           el[key] = params[key];
         }
@@ -446,11 +464,11 @@ export default class SelectActions {
           parseInt(self.config.borderRadius) * 0.75
         }px`,
       },
-      ".multiselect-dropdown": {
+      ".sa-dropdown": {
         "min-width": `${self.config.minWidth}`,
         "max-width": `${self.config.maxWidth}`,
       },
-      ".multiselect-dropdown-list": {
+      ".sa-dropdown-list": {
         "max-height": `${self.config.maxHeight}`,
       },
     };
