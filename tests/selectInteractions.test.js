@@ -38,7 +38,7 @@ describe("Simple select interactions", () => {
     expect(results).toBe('[]');
   });
 
-  test("Select six options", async () => {
+  test("Select nine options", async () => {
     await page.waitForSelector(".sa-dropdown");
     await page.click(".sa-dropdown");
 
@@ -53,9 +53,8 @@ describe("Simple select interactions", () => {
     await page.click("h2");
 
     // Check if selected result is being showed correct
-    await page.waitForSelector(".maxselected");
     const results = await page.evaluate(
-      () => document.querySelector(".maxselected").innerText
+      () => document.querySelectorAll("span")[0].innerText
     );
     expect(results).toBe('9 Selected');
   });
@@ -70,10 +69,12 @@ describe("Simple select interactions", () => {
     await page.waitForFunction(() => document.querySelector(".sa-all-selector"));
     await page.click(".sa-all-selector");
 
+    // Clickout dropdown
+    await page.click("h2");
+
     // Check if selected result is being showed correct
-    await page.waitForSelector(".maxselected");
     const results = await page.evaluate(
-      () => document.querySelector(".maxselected").innerText
+      () => document.querySelectorAll("span")[1].innerHTML
     );
     expect(results).toBe('9 Selecionados');
   });
