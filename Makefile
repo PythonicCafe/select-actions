@@ -33,5 +33,6 @@ test-watch:	## Run tests and watch every update in all tests scripts of /tests
 	docker exec -it select_actions_dev sh -c "yarn run build; yarn lite-server & yarn run test-watch"
 
 release: clean bundle ## Make clean, bundle and make release with publish command
+	exit
 	yarn publish
 
