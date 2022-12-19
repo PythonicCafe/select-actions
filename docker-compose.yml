@@ -2,12 +2,20 @@ version: "3"
 
 services:
   app:
-    build:
-      context: ./
-      dockerfile: ./docker/dev/Dockerfile
-    user: "1000:1000"
-    container_name: sa_dev
+    build: .
+    env_file:
+      - .env
+    user: "${UID}:${GID}"
+    container_name: select_actions_dev
+    stdin_open: true
+    command:
+      - "/bin/sh"
     ports:
       - "3000:3000"
     volumes:
       - "/app/node_modules"
+      - ".:/app"
+
+volumes:
+  node_modules:
+
