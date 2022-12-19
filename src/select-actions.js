@@ -37,7 +37,14 @@ export default class SelectActions {
       document.querySelectorAll("select").map(el => self._createDropdown(el));
   }
 
-  _createDropdown(multiSelect) {
+  /**
+   * Creates the dropdown element and appends it after the selectAction element.
+   *
+   * @param {HTMLElement} selectAction - The original select element that will be replaced by the dropdown.
+   *
+   * @returns {void}
+   */
+  _createDropdown(selectAction) {
     const self = this;
     const div = this._newElement("div", { class: "sa-dropdown", "tabIndex": "0" });
     const dropdownListWrapper = this._newElement("div", {
@@ -47,7 +54,7 @@ export default class SelectActions {
       class: "sa-dropdown-list",
     });
 
-    multiSelect.parentNode.insertBefore(div, multiSelect.nextSibling);
+    selectAction.parentNode.insertBefore(div, selectAction.nextSibling);
 
     const search = this._newElement("input", {
       class: ["sa-dropdown-search"].concat([
@@ -57,7 +64,7 @@ export default class SelectActions {
         width: "100%",
         display: self.config.search
         ? "block"
-        : multiSelect.attributes.search?.value === "true"
+        : selectAction.attributes.search?.value === "true"
         ? "block"
         : "none",
       },
@@ -71,23 +78,33 @@ export default class SelectActions {
     dropdownList.innerHTML = "";
 
     // First execution after field creation
-    multiSelect.addEventListener("change", function () {
-      self._refresh(div, multiSelect);
+    selectAction.addEventListener("change", function () {
+      self._refresh(div, selectAction);
     });
 
     // Creating multiple or simple
+
     div.previousElementSibling.multiple ?
-      self._populateMultiSelect(dropdownList, dropdownListWrapper, multiSelect) :
-      self._populateSimpleSelect(div, dropdownList, multiSelect, search, dropdownListWrapper);
+      self._populateMultiSelect(dropdownList, dropdownListWrapper, selectAction) :
+      self._populateSimpleSelect(div, dropdownList, selectAction, search, dropdownListWrapper);
 
     div.dropdownListWrapper = dropdownListWrapper;
-    self._refresh(div, multiSelect);
-    self._settingEventListeners(div, search, dropdownList, dropdownListWrapper, multiSelect);
+    self._refresh(div, selectAction);
+    self._settingEventListeners(div, search, dropdownList, dropdownListWrapper, selectAction);
   }
 
-  _populateSimpleSelect(div, dropdownList, multiSelect, search, dropdownListWrapper) {
+  /**
+   * Populates the dropdown list for a simple select element.
+   *
+   * @param {HTMLElement} div - The container element for the simple select.
+   * @param {HTMLElement} dropdownList - The element that holds the options in the dropdown list.
+   * @param {HTMLSelectElement} selectAction - The original select element.
+   * @param {HTMLElement} search - The search input element for the simple select.
+   * @param {HTMLElement} dropdownListWrapper - The element that wraps around the dropdown list and search input.
+   */
+  _populateSimpleSelect(div, dropdownList, selectAction, search, dropdownListWrapper) {
     const self = this;
-    Array.from(multiSelect.options).map((option) => {
+    Array.from(selectAction.options).map((option) => {
       let optionElement = self._newElement("div", {
         srcElement: option,
         class: option.disabled ? ["sa-option", "sa-unsearchable", "sa-disabled-option"] : "sa-option",
@@ -101,7 +118,7 @@ export default class SelectActions {
       if(!option.disabled) {
         optionElement.addEventListener("click", () => {
           optionElement.srcElement.selected = true;
-          multiSelect.dispatchEvent(new Event("change"));
+          selectAction.dispatchEvent(new Event("change"));
           self._closeSelect(div, search, dropdownList, dropdownListWrapper);
         })
 
@@ -110,12 +127,19 @@ export default class SelectActions {
     });
   }
 
-  _populateMultiSelect(dropdownList, dropdownListWrapper, multiSelect) {
+  /**
+   * Populates a select-action dropdown list with options from a given `<select>` element.
+   *
+   * @param {Element} dropdownList - The dropdown list element to be populated.
+   * @param {Element} dropdownListWrapper - The wrapper element of the dropdown list.
+   * @param {HTMLSelectElement} selectAction - The `<select>` element containing the options to be added to the dropdown list.
+   */
+  _populateMultiSelect(dropdownList, dropdownListWrapper, selectAction) {
     const self = this;
 
     if (
       self.config.selectAll ||
-      multiSelect.attributes["select-all"]
+      selectAction.attributes["select-all"]
     ) {
       let optionElementAll = self._newElement("div", {
         class: ["sa-unsearchable", "sa-all-selector", "sa-option"],
@@ -143,7 +167,7 @@ export default class SelectActions {
             }
           });
 
-        multiSelect.dispatchEvent(new Event("change"));
+        selectAction.dispatchEvent(new Event("change"));
       });
       optionCheckbox.addEventListener("click", () => {
         optionCheckbox.checked = !optionCheckbox.checked;
@@ -151,7 +175,7 @@ export default class SelectActions {
 
       dropdownList.appendChild(optionElementAll);
     }
-    Array.from(multiSelect.options).map((option) => {
+    Array.from(selectAction.options).map((option) => {
       let optionElement = self._newElement("div", {
         srcElement: option,
         class: "sa-option"
@@ -176,7 +200,7 @@ export default class SelectActions {
         optionElement.querySelector("input").checked =
           !optionElement.querySelector("input").checked;
         optionElement.srcElement.selected = !optionElement.srcElement.selected;
-        multiSelect.dispatchEvent(new Event("change"));
+        selectAction.dispatchEvent(new Event("change"));
       });
 
       optionCheckbox.addEventListener("click", () => {
@@ -189,7 +213,19 @@ export default class SelectActions {
     });
   }
 
-  _settingEventListeners(div, search, dropdownList, dropdownListWrapper, multiSelect) {
+  /**
+   * This function sets up event listeners for the select dropdown.
+   * It listens for input events on the search field, clicks on the dropdown field, and clicks outside the dropdown field.
+   * The function also listens for keydown events on the dropdown field and the document.
+   * When a matching event is triggered, it updates the options dropdown, opens or closes the select, and refreshes the dropdown field.
+   *
+   * @param {HTMLElement} div - The dropdown field element.
+   * @param {HTMLInputElement} search - The search field element within the dropdown.
+   * @param {HTMLElement} dropdownList - The options dropdown element.
+   * @param {HTMLElement} dropdownListWrapper - The wrapper element for the options dropdown.
+   * @param {HTMLSelectElement} selectAction - The original select element.
+   */
+  _settingEventListeners(div, search, dropdownList, dropdownListWrapper, selectAction) {
     const self = this;
     search.addEventListener("input", () => {
       self._updateOptionsDropdown(search, dropdownList, dropdownListWrapper);
@@ -215,18 +251,26 @@ export default class SelectActions {
         div.dropdownListWrapper.style.display === "flex"
       ) {
         self._closeSelect(div, search, dropdownList, dropdownListWrapper);
-        self._refresh(div, multiSelect);
+        self._refresh(div, selectAction);
       }
     });
 
+    // EventListener to close select if open and Esc key pressed
     div.addEventListener("keydown", (event) => {
       if (event.key === 'Escape') {
         self._closeSelect(div, search, dropdownList, dropdownListWrapper);
-        self._refresh(div, multiSelect);
+        self._refresh(div, selectAction);
       }
     });
   }
 
+  /**
+   * Updates the options in a select-action dropdown list based on a given search query.
+   *
+   * @param {HTMLInputElement} search - The search input element used to filter the options in the dropdown list.
+   * @param {Element} dropdownList - The dropdown list element to be updated.
+   * @param {Element} dropdownListWrapper - The wrapper element of the dropdown list.
+   */
   _updateOptionsDropdown(search, dropdownList, dropdownListWrapper) {
     const self = this;
     const searchLength = search.value.length;
@@ -282,6 +326,12 @@ export default class SelectActions {
     }
   }
 
+  /**
+   * Opens a select-action dropdown list and positions it correctly based on the available viewport space.
+   *
+   * @param {Element} div - The element containing the dropdown list.
+   * @param {HTMLInputElement} search - The search input element in the dropdown list.
+   */
   _openSelect(div, search) {
     const self = this;
     const dropDownStyle = div.dropdownListWrapper.style;
@@ -316,6 +366,14 @@ export default class SelectActions {
     search.select();
   }
 
+  /**
+   * Closes a select-action dropdown list and removes any positioning styles applied to it.
+   *
+   * @param {Element} div - The element containing the dropdown list.
+   * @param {HTMLInputElement} search - The search input element in the dropdown list.
+   * @param {Element} dropdownList - The dropdown list element to be closed.
+   * @param {Element} dropdownListWrapper - The wrapper element of the dropdown list.
+   */
   _closeSelect(div, search, dropdownList, dropdownListWrapper) {
     const self = this;
 
@@ -336,6 +394,12 @@ export default class SelectActions {
     }
   }
 
+  /**
+   * Determines whether an element is outside the viewport.
+   *
+   * @param {Element} el - The element to be checked.
+   * @returns {boolean} A boolean indicating whether the element is outside the viewport.
+   */
   _isOutOfViewport(el) {
     const bounding = el.getBoundingClientRect();
     const out = {};
@@ -346,7 +410,13 @@ export default class SelectActions {
     return out.top || out.left || out.bottom || out.right;
   }
 
-  _refresh(div, multiSelect) {
+  /**
+   * Refreshes the visual representation of a select-action field based on its selected options.
+   *
+   * @param {Element} div - The element containing the visual representation of the select-action field.
+   * @param {HTMLSelectElement} selectAction - The select-action element to be refreshed.
+   */
+  _refresh(div, selectAction) {
     const self = this;
 
     // Cleaning field to populate
@@ -354,12 +424,12 @@ export default class SelectActions {
       .querySelectorAll(".sa-text, span.sa-ph")
       .forEach((placeholder) => div.removeChild(placeholder));
 
-    const selected = Array.from(multiSelect.selectedOptions);
+    const selected = Array.from(selectAction.selectedOptions);
     const selectedLength = selected.length;
 
     if (
       (self.config.showOnlySelectionCount ||
-        selectedLength > (multiSelect.attributes["max-items"]?.value ?? 5)) &&
+        selectedLength > (selectAction.attributes["max-items"]?.value ?? 5)) &&
       selectedLength > 0
     ) {
       const txtAfterCounter =
@@ -391,12 +461,12 @@ export default class SelectActions {
               text: "X",
               title: self.config.txtRemove,
               onclick: (event) => {
-                self._deleteOpt(span, div, multiSelect);
+                self._removeOpt(span, div, selectAction);
                 event.stopPropagation();
               },
               onkeydown: (event) => {
                 if(event.key === 'Enter'){
-                  self._deleteOpt(span, div, multiSelect);
+                  self._removeOpt(span, div, selectAction);
                   e.stopPropagation();
                 }
               },
@@ -408,23 +478,41 @@ export default class SelectActions {
       });
     }
 
-    if (multiSelect.selectedOptions?.length === 0) {
+    if (selectAction.selectedOptions?.length === 0) {
       div.appendChild(
         self._newElement("span", {
           class: ["sa-ph", "sa-placeholder"],
           text:
-            multiSelect.attributes?.placeholder?.value ??
+            selectAction.attributes?.placeholder?.value ??
             self.config.placeholder,
         })
       );
     }
   }
 
-  _deleteOpt(span, div, multiSelect) {
+  /**
+   * Removes the given option from the multiselect field.
+   *
+   * @param {HTMLElement} span - The span element representing the option to remove.
+   * @param {HTMLElement} div - The div element containing the multiselect field.
+   */
+  _removeOpt(span, div, selectAction) {
     span.srcElement.optionElement.dispatchEvent(new Event("click"));
-    this._refresh(div, multiSelect);
+    this._refresh(div, selectAction);
   }
 
+
+  /**
+   * Creates a new element and sets its attributes and content based on the provided parameters.
+   *
+   * @param {string} tag - The tag name of the element to be created.
+   * @param {Object} [params] - An object containing the attributes and content to be set on the element.
+   * @param {(string|string[])} [params.class] - A class name or array of class names to be set on the element.
+   * @param {Object} [params.style] - An object containing style properties and values to be set on the element.
+   * @param {string} [params.text] - The text content to be set on the element.
+   *
+   * @returns {Element} The newly created element.
+   */
   _newElement(tag, params) {
     let el = document.createElement(tag);
     if (params) {
@@ -453,7 +541,13 @@ export default class SelectActions {
     return el;
   }
 
-  // This allow user to send customizations from instatiations
+  /**
+   * Allow dev to set some styles customizations in select-actions instantiation
+   *
+   * @param {string} tag - The type of element to create.
+   * @param {Object} params - An object containing the attributes to set on the new element.
+   * @return {HTMLElement} - The newly created element.
+   */
   _createStyles() {
     const self = this;
 
