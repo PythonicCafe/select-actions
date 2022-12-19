@@ -1,4 +1,4 @@
-describe("Simple select interactions", () => {
+describe("Multiple select interactions", () => {
   test("Multiselects starts with empty value", async () => {
     // Check if any option is selected
     const results = await page.evaluate(
@@ -116,4 +116,5 @@ describe("Simple select interactions", () => {
     );
     expect(result).toBe('[João Pessoa]');
   });
+
 });
