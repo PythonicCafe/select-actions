@@ -56,6 +56,7 @@ export default class SelectActions {
 
     selectAction.parentNode.insertBefore(div, selectAction.nextSibling);
 
+    // Creating search input field
     const search = this._newElement("input", {
       class: ["sa-dropdown-search"].concat([
         self.config.searchInput?.class ?? "form-control",
@@ -83,7 +84,6 @@ export default class SelectActions {
     });
 
     // Creating multiple or simple
-
     div.previousElementSibling.multiple ?
       self._populateMultiSelect(dropdownList, dropdownListWrapper, selectAction) :
       self._populateSimpleSelect(div, dropdownList, selectAction, search, dropdownListWrapper);
@@ -108,6 +108,7 @@ export default class SelectActions {
       let optionElement = self._newElement("div", {
         srcElement: option,
         class: option.disabled ? ["sa-option", "sa-unsearchable", "sa-disabled-option"] : "sa-option",
+        tabIndex: "0"
       });
       optionElement.appendChild(
         self._newElement("label", { text: option.text })
@@ -116,10 +117,19 @@ export default class SelectActions {
       dropdownList.appendChild(optionElement);
 
       if(!option.disabled) {
+        // Add eventListener to select element
         optionElement.addEventListener("click", () => {
           optionElement.srcElement.selected = true;
           selectAction.dispatchEvent(new Event("change"));
           self._closeSelect(div, search, dropdownList, dropdownListWrapper);
+        })
+
+        optionElement.addEventListener("keypress", () => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            optionElement.srcElement.selected = true;
+            selectAction.dispatchEvent(new Event("change"));
+            self._closeSelect(div, search, dropdownList, dropdownListWrapper);
+          }
         })
 
         option.optionElement = optionElement;
@@ -538,6 +548,7 @@ export default class SelectActions {
         }
       });
     }
+
     return el;
   }
 
