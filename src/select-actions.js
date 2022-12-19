@@ -431,8 +431,8 @@ export default class SelectActions {
 
     // Cleaning field to populate
     div
-      .querySelectorAll(".sa-text, span.sa-ph")
-      .forEach((placeholder) => div.removeChild(placeholder));
+      .querySelectorAll(".sa-text, span.sa-ph, .sa-simple-del")
+      .forEach((el) => div.removeChild(el));
 
     const selected = Array.from(selectAction.selectedOptions);
     const selectedLength = selected.length;
@@ -457,34 +457,64 @@ export default class SelectActions {
       );
     } else {
       const isMultiple = div.previousElementSibling.multiple;
+
       selected.map((option) => {
+        const classList = ["sa-text"];
+
         let span = self._newElement("span", {
-          class: isMultiple ? ["sa-text", "sa-option-text"] : ["sa-text"],
+          class: classList,
           text: option.text,
           srcElement: option,
         });
 
-        if (!self.config.hideX && isMultiple) {
-          span.prepend(
-            self._newElement("span", {
-              class: ["sa-del", "sa-option-del"],
-              text: "X",
-              title: self.config.txtRemove,
-              onclick: (event) => {
-                self._removeOpt(span, div, selectAction);
-                event.stopPropagation();
-              },
-              onkeydown: (event) => {
-                if(event.key === 'Enter'){
-                  self._removeOpt(span, div, selectAction);
-                  e.stopPropagation();
-                }
-              },
-              tabIndex: 0
-            })
-          );
-        }
         div.appendChild(span);
+
+        if (isMultiple) {
+          span.classList.add("sa-option-text");
+
+          if (!self.config.hideX) {
+            span.prepend(
+              self._newElement("span", {
+                class: ["sa-del", "sa-option-del"],
+                text: "X",
+                title: self.config.txtRemove,
+                tabIndex: 0,
+                onclick: (event) => {
+                  self._removeOpt(span, div, selectAction);
+                  event.stopPropagation();
+                },
+                onkeydown: (event) => {
+                  if(event.key === 'Enter') {
+                    self._removeOpt(span, div, selectAction);
+                    e.stopPropagation();
+                  }
+                }
+              })
+            );
+          }
+        } else {
+          div.style = "justify-content: space-between; align-items: center";
+          if (!option.disabled) {
+            div.append(
+              self._newElement("span", {
+                class: ["sa-del", "sa-option-del", "sa-simple-del"],
+                text: "X",
+                title: self.config.txtRemove,
+                tabIndex: 0,
+                onclick: (event) => {
+                  self._cleanField(span, div, selectAction);
+                  event.stopPropagation();
+                },
+                onkeydown: (event) => {
+                  if(event.key === 'Enter'){
+                    self._cleanField(span, div, selectAction);
+                    e.stopPropagation();
+                  }
+                },
+              })
+            );
+          }
+        }
       });
     }
 
@@ -511,6 +541,17 @@ export default class SelectActions {
     this._refresh(div, selectAction);
   }
 
+  /**
+   * Clean the given option from the simple select field.
+   *
+   * @param {HTMLElement} span - The span element representing the option to remove.
+   * @param {HTMLElement} div - The div element containing the multiselect field.
+   */
+  _cleanField(span, div, selectAction) {
+    span.srcElement.parentNode.selectedIndex = 0;
+    selectAction.dispatchEvent(new Event("change"));
+    this._refresh(div, selectAction);
+  }
 
   /**
    * Creates a new element and sets its attributes and content based on the provided parameters.
