@@ -1,3 +1,5 @@
+import { findTab, isOutOfBottomViewport } from "./utils";
+
 export default class SelectActions {
   constructor(params) {
     this.config = {
@@ -105,10 +107,11 @@ export default class SelectActions {
   _populateSimpleSelect(div, dropdownList, selectAction, search, dropdownListWrapper) {
     const self = this;
     Array.from(selectAction.options).map((option) => {
+      const isDisabled = option.disabled;
       let optionElement = self._newElement("div", {
         srcElement: option,
-        class: option.disabled ? ["sa-option", "sa-unsearchable", "sa-disabled-option"] : "sa-option",
-        tabIndex: "0"
+        class: isDisabled ? ["sa-option", "sa-unsearchable", "sa-disabled-option"] : "sa-option",
+        tabIndex: isDisabled ? "-1" : "0"
       });
       optionElement.appendChild(
         self._newElement("label", { text: option.text })
@@ -237,6 +240,8 @@ export default class SelectActions {
    */
   _settingEventListeners(div, search, dropdownList, dropdownListWrapper, selectAction) {
     const self = this;
+
+    // Inputs will fire update dropdown elements
     search.addEventListener("input", () => {
       self._updateOptionsDropdown(search, dropdownList, dropdownListWrapper);
     });
@@ -247,11 +252,53 @@ export default class SelectActions {
       self._openSelect(div, search);
     });
 
-    div.addEventListener("keypress", (event) => {
-      if (div !== event.target) return;
-      if (event.key === 'Enter') {
+    // Detect key pressed and interact with dropdown
+    div.addEventListener("keydown", (event) => {
+      const inputSearch = div.querySelector(".sa-dropdown-search.form-control");
+      const dropdownIsHide = div.querySelector(".sa-dropdown-list-wrapper").style.display !== "flex";
+      const activeEl = document.activeElement;
+
+      if (event.key === 'Enter' && dropdownIsHide) {
+        // Dropdown open
         self._openSelect(div, search);
+      } else if (
+        event.keyCode >= 65 && event.keyCode <= 90
+      ) {
+        if (dropdownIsHide) {
+          // Dropdown not being displayed will open and add keypressed to inputSearch
+          self._openSelect(div, search);
+        } else if (activeEl !== inputSearch) {
+          // Dropdown being displayed will focus and add keypressed to inputSearch
+          inputSearch.focus();
+        }
+      } else if (event.key === 'Escape') {
+        // Dropdown close and focus in select
+        self._closeSelect(div, search, dropdownList, dropdownListWrapper);
+        self._refresh(div, selectAction);
+        div.focus();
+      } else if (!dropdownIsHide) {
+        if (
+          event.key === 'ArrowUp' &&
+          (
+            activeEl.classList == "sa-option" ||
+            Array.from(activeEl.parentNode.classList).includes("sa-option")
+          )
+        ) {
+          event.preventDefault();
+          findTab(div, 'input[type="checkbox"], .sa-option', event.target, false).focus();
+        }
+        if (
+          event.key === 'ArrowDown' &&
+          (
+            activeEl.classList == "sa-option" ||
+            Array.from(activeEl.parentNode.classList).includes("sa-option")
+          )
+        ) {
+          event.preventDefault();
+          findTab(div, 'input[type="checkbox"], .sa-option', event.target).focus();
+        }
       }
+
     });
 
     // EventListener to close select if open and clickout
@@ -260,14 +307,6 @@ export default class SelectActions {
         !div.contains(event.target) &&
         div.dropdownListWrapper.style.display === "flex"
       ) {
-        self._closeSelect(div, search, dropdownList, dropdownListWrapper);
-        self._refresh(div, selectAction);
-      }
-    });
-
-    // EventListener to close select if open and Esc key pressed
-    div.addEventListener("keydown", (event) => {
-      if (event.key === 'Escape') {
         self._closeSelect(div, search, dropdownList, dropdownListWrapper);
         self._refresh(div, selectAction);
       }
@@ -347,7 +386,7 @@ export default class SelectActions {
     const dropDownStyle = div.dropdownListWrapper.style;
     dropDownStyle.display = "flex";
 
-    if(this._isOutOfViewport(div.dropdownListWrapper)) {
+    if(isOutOfBottomViewport(div.dropdownListWrapper)) {
       dropDownStyle.flexDirection = "column-reverse";
       div.querySelector(".sa-dropdown-search").style
         .borderTop = "solid 1px var(--color-border)";
@@ -402,22 +441,6 @@ export default class SelectActions {
     if (self.resizeObserver) {
       self.resizeObserver.unobserve(div);
     }
-  }
-
-  /**
-   * Determines whether an element is outside the viewport.
-   *
-   * @param {Element} el - The element to be checked.
-   * @returns {boolean} A boolean indicating whether the element is outside the viewport.
-   */
-  _isOutOfViewport(el) {
-    const bounding = el.getBoundingClientRect();
-    const out = {};
-    out.top = bounding.top < 0;
-    out.left = bounding.left < 0;
-    out.bottom = bounding.bottom > (window.innerHeight || document.documentElement.clientHeight);
-    out.right = bounding.right > (window.innerWidth || document.documentElement.clientWidth);
-    return out.top || out.left || out.bottom || out.right;
   }
 
   /**
@@ -494,7 +517,7 @@ export default class SelectActions {
           }
         } else {
           div.style = "justify-content: space-between; align-items: center";
-          if (!option.disabled) {
+          if (!option.disabled && !self.config.hideX) {
             div.append(
               self._newElement("span", {
                 class: ["sa-del", "sa-option-del", "sa-simple-del"],
