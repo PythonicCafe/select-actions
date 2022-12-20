@@ -34,9 +34,11 @@ export default class SelectActions {
       self._createStyles();
     }
 
-    selectID ?
-      self._createDropdown(document.querySelector(selectID)) :
-      document.querySelectorAll("select").map(el => self._createDropdown(el));
+    selectID
+      ? self._createDropdown(document.querySelector(selectID))
+      : document
+          .querySelectorAll("select")
+          .map((el) => self._createDropdown(el));
   }
 
   /**
@@ -48,7 +50,10 @@ export default class SelectActions {
    */
   _createDropdown(selectAction) {
     const self = this;
-    const div = this._newElement("div", { class: "sa-dropdown", "tabIndex": "0" });
+    const div = this._newElement("div", {
+      class: "sa-dropdown",
+      tabIndex: "0",
+    });
     const dropdownListWrapper = this._newElement("div", {
       class: "sa-dropdown-list-wrapper",
     });
@@ -66,10 +71,10 @@ export default class SelectActions {
       style: {
         width: "100%",
         display: self.config.search
-        ? "block"
-        : selectAction.attributes.search?.value === "true"
-        ? "block"
-        : "none",
+          ? "block"
+          : selectAction.attributes.search?.value === "true"
+          ? "block"
+          : "none",
       },
       placeholder: self.config.txtSearch,
     });
@@ -86,13 +91,29 @@ export default class SelectActions {
     });
 
     // Creating multiple or simple
-    div.previousElementSibling.multiple ?
-      self._populateMultiSelect(dropdownList, dropdownListWrapper, selectAction) :
-      self._populateSimpleSelect(div, dropdownList, selectAction, search, dropdownListWrapper);
+    div.previousElementSibling.multiple
+      ? self._populateMultiSelect(
+          dropdownList,
+          dropdownListWrapper,
+          selectAction
+        )
+      : self._populateSimpleSelect(
+          div,
+          dropdownList,
+          selectAction,
+          search,
+          dropdownListWrapper
+        );
 
     div.dropdownListWrapper = dropdownListWrapper;
     self._refresh(div, selectAction);
-    self._settingEventListeners(div, search, dropdownList, dropdownListWrapper, selectAction);
+    self._settingEventListeners(
+      div,
+      search,
+      dropdownList,
+      dropdownListWrapper,
+      selectAction
+    );
   }
 
   /**
@@ -104,14 +125,22 @@ export default class SelectActions {
    * @param {HTMLElement} search - The search input element for the simple select.
    * @param {HTMLElement} dropdownListWrapper - The element that wraps around the dropdown list and search input.
    */
-  _populateSimpleSelect(div, dropdownList, selectAction, search, dropdownListWrapper) {
+  _populateSimpleSelect(
+    div,
+    dropdownList,
+    selectAction,
+    search,
+    dropdownListWrapper
+  ) {
     const self = this;
     Array.from(selectAction.options).map((option) => {
       const isDisabled = option.disabled;
       let optionElement = self._newElement("div", {
         srcElement: option,
-        class: isDisabled ? ["sa-option", "sa-unsearchable", "sa-disabled-option"] : "sa-option",
-        tabIndex: isDisabled ? "-1" : "0"
+        class: isDisabled
+          ? ["sa-option", "sa-unsearchable", "sa-disabled-option"]
+          : "sa-option",
+        tabIndex: isDisabled ? "-1" : "0",
       });
       optionElement.appendChild(
         self._newElement("label", { text: option.text })
@@ -119,21 +148,21 @@ export default class SelectActions {
 
       dropdownList.appendChild(optionElement);
 
-      if(!option.disabled) {
+      if (!option.disabled) {
         // Add eventListener to select element
         optionElement.addEventListener("click", () => {
           optionElement.srcElement.selected = true;
           selectAction.dispatchEvent(new Event("change"));
           self._closeSelect(div, search, dropdownList, dropdownListWrapper);
-        })
+        });
 
         optionElement.addEventListener("keypress", () => {
-          if (event.key === 'Enter' || event.key === ' ') {
+          if (event.key === "Enter" || event.key === " ") {
             optionElement.srcElement.selected = true;
             selectAction.dispatchEvent(new Event("change"));
             self._closeSelect(div, search, dropdownList, dropdownListWrapper);
           }
-        })
+        });
 
         option.optionElement = optionElement;
       }
@@ -150,10 +179,7 @@ export default class SelectActions {
   _populateMultiSelect(dropdownList, dropdownListWrapper, selectAction) {
     const self = this;
 
-    if (
-      self.config.selectAll ||
-      selectAction.attributes["select-all"]
-    ) {
+    if (self.config.selectAll || selectAction.attributes["select-all"]) {
       let optionElementAll = self._newElement("div", {
         class: ["sa-unsearchable", "sa-all-selector", "sa-option"],
       });
@@ -170,9 +196,7 @@ export default class SelectActions {
 
         let ch = optionElementAll.querySelector("input").checked;
         dropdownList
-          .querySelectorAll(
-            ":scope > div:not(.sa-unsearchable)"
-          )
+          .querySelectorAll(":scope > div:not(.sa-unsearchable)")
           .forEach((i) => {
             if (i.style.display !== "none") {
               i.querySelector("input").checked = ch;
@@ -191,7 +215,7 @@ export default class SelectActions {
     Array.from(selectAction.options).map((option) => {
       let optionElement = self._newElement("div", {
         srcElement: option,
-        class: "sa-option"
+        class: "sa-option",
       });
       let optionCheckbox = self._newElement("input", {
         type: "checkbox",
@@ -203,9 +227,8 @@ export default class SelectActions {
       );
 
       optionElement.addEventListener("click", () => {
-        const optionElementAll = dropdownListWrapper.querySelector(
-          ".sa-unsearchable"
-        );
+        const optionElementAll =
+          dropdownListWrapper.querySelector(".sa-unsearchable");
         if (optionElementAll) {
           optionElementAll.querySelector("input").checked = false;
         }
@@ -238,7 +261,13 @@ export default class SelectActions {
    * @param {HTMLElement} dropdownListWrapper - The wrapper element for the options dropdown.
    * @param {HTMLSelectElement} selectAction - The original select element.
    */
-  _settingEventListeners(div, search, dropdownList, dropdownListWrapper, selectAction) {
+  _settingEventListeners(
+    div,
+    search,
+    dropdownList,
+    dropdownListWrapper,
+    selectAction
+  ) {
     const self = this;
 
     // Inputs will fire update dropdown elements
@@ -248,22 +277,25 @@ export default class SelectActions {
 
     // EventListener to open select
     div.addEventListener("click", (event) => {
-      if (div !== event.target && !event.target.classList.contains("sa-maxselected")) return;
+      if (
+        div !== event.target &&
+        !event.target.classList.contains("sa-maxselected")
+      )
+        return;
       self._openSelect(div, search);
     });
 
     // Detect key pressed and interact with dropdown
     div.addEventListener("keydown", (event) => {
       const inputSearch = div.querySelector(".sa-dropdown-search.form-control");
-      const dropdownIsHide = div.querySelector(".sa-dropdown-list-wrapper").style.display !== "flex";
+      const dropdownIsHide =
+        div.querySelector(".sa-dropdown-list-wrapper").style.display !== "flex";
       const activeEl = document.activeElement;
 
-      if (event.key === 'Enter' && dropdownIsHide) {
+      if (event.key === "Enter" && dropdownIsHide) {
         // Dropdown open
         self._openSelect(div, search);
-      } else if (
-        event.keyCode >= 65 && event.keyCode <= 90
-      ) {
+      } else if (event.keyCode >= 65 && event.keyCode <= 90) {
         if (dropdownIsHide) {
           // Dropdown not being displayed will open and add keypressed to inputSearch
           self._openSelect(div, search);
@@ -271,34 +303,38 @@ export default class SelectActions {
           // Dropdown being displayed will focus and add keypressed to inputSearch
           inputSearch.focus();
         }
-      } else if (event.key === 'Escape') {
+      } else if (event.key === "Escape") {
         // Dropdown close and focus in select
         self._closeSelect(div, search, dropdownList, dropdownListWrapper);
         self._refresh(div, selectAction);
         div.focus();
       } else if (!dropdownIsHide) {
         if (
-          event.key === 'ArrowUp' &&
-          (
-            activeEl.classList == "sa-option" ||
-            Array.from(activeEl.parentNode.classList).includes("sa-option")
-          )
+          event.key === "ArrowUp" &&
+          (activeEl.classList == "sa-option" ||
+            Array.from(activeEl.parentNode.classList).includes("sa-option"))
         ) {
           event.preventDefault();
-          findTab(div, 'input[type="checkbox"], .sa-option', event.target, false).focus();
+          findTab(
+            div,
+            'input[type="checkbox"], .sa-option',
+            event.target,
+            false
+          ).focus();
         }
         if (
-          event.key === 'ArrowDown' &&
-          (
-            activeEl.classList == "sa-option" ||
-            Array.from(activeEl.parentNode.classList).includes("sa-option")
-          )
+          event.key === "ArrowDown" &&
+          (activeEl.classList == "sa-option" ||
+            Array.from(activeEl.parentNode.classList).includes("sa-option"))
         ) {
           event.preventDefault();
-          findTab(div, 'input[type="checkbox"], .sa-option', event.target).focus();
+          findTab(
+            div,
+            'input[type="checkbox"], .sa-option',
+            event.target
+          ).focus();
         }
       }
-
     });
 
     // EventListener to close select if open and clickout
@@ -323,7 +359,7 @@ export default class SelectActions {
   _updateOptionsDropdown(search, dropdownList, dropdownListWrapper) {
     const self = this;
     const searchLength = search.value.length;
-    if (searchLength < 3 && searchLength > 0 ) {
+    if (searchLength < 3 && searchLength > 0) {
       return;
     }
 
@@ -337,10 +373,18 @@ export default class SelectActions {
     dropdownList
       .querySelectorAll(":scope div:not(.sa-unsearchable)")
       .forEach((div) => {
-        let innerText = div.querySelector("label")
-          .innerText.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        let innerText = div
+          .querySelector("label")
+          .innerText.normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase();
         if (
-          innerText.includes(search.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
+          innerText.includes(
+            search.value
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .toLowerCase()
+          )
         ) {
           div.style.display = "flex";
           notFound = false;
@@ -358,7 +402,9 @@ export default class SelectActions {
         return;
       }
 
-      const nfDiv = self._newElement("div", { class: ["sa-option", "sa-not-found"] });
+      const nfDiv = self._newElement("div", {
+        class: ["sa-option", "sa-not-found"],
+      });
       const nfLabel = self._newElement("label", {
         text: self.config.txtNotFound,
       });
@@ -386,17 +432,17 @@ export default class SelectActions {
     const dropDownStyle = div.dropdownListWrapper.style;
     dropDownStyle.display = "flex";
 
-    if(isOutOfBottomViewport(div.dropdownListWrapper)) {
+    if (isOutOfBottomViewport(div.dropdownListWrapper)) {
       dropDownStyle.flexDirection = "column-reverse";
-      div.querySelector(".sa-dropdown-search").style
-        .borderTop = "solid 1px var(--color-border)";
+      div.querySelector(".sa-dropdown-search").style.borderTop =
+        "solid 1px var(--color-border)";
 
       // This will update search input position if field size changes
       let prevHeight;
-      self.resizeObserver = new ResizeObserver(changes => {
-        for(const change of changes){
-          if(change.contentRect.height === prevHeight) return
-          prevHeight = change.contentRect.height
+      self.resizeObserver = new ResizeObserver((changes) => {
+        for (const change of changes) {
+          if (change.contentRect.height === prevHeight) return;
+          prevHeight = change.contentRect.height;
 
           let position = parseInt(self.config.maxHeight.replace("px", "")) + 2;
           position = div.clientHeight > 35 ? position - 35 : position;
@@ -407,8 +453,8 @@ export default class SelectActions {
       self.resizeObserver.observe(div);
     } else {
       dropDownStyle.flexDirection = "column";
-      div.querySelector(".sa-dropdown-search").style
-        .borderBottom = "solid 1px var(--color-border)";
+      div.querySelector(".sa-dropdown-search").style.borderBottom =
+        "solid 1px var(--color-border)";
     }
 
     search.focus();
@@ -507,11 +553,11 @@ export default class SelectActions {
                   event.stopPropagation();
                 },
                 onkeydown: (event) => {
-                  if(event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     self._removeOpt(span, div, selectAction);
                     e.stopPropagation();
                   }
-                }
+                },
               })
             );
           }
@@ -529,7 +575,7 @@ export default class SelectActions {
                   event.stopPropagation();
                 },
                 onkeydown: (event) => {
-                  if(event.key === 'Enter'){
+                  if (event.key === "Enter") {
                     self._cleanField(span, div, selectAction);
                     e.stopPropagation();
                   }
@@ -593,9 +639,7 @@ export default class SelectActions {
       Object.keys(params).forEach((key) => {
         if (key === "class") {
           Array.isArray(params[key])
-            ? params[key].forEach((o) =>
-                o !== "" ? el.classList.add(o) : 0
-              )
+            ? params[key].forEach((o) => (o !== "" ? el.classList.add(o) : 0))
             : params[key] !== ""
             ? el.classList.add(params[key])
             : 0;

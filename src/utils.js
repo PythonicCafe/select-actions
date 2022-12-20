@@ -1,4 +1,3 @@
-
 /**
  * Finds the next or previous tab element in a given container element.
  *
@@ -11,19 +10,21 @@
  */
 export function findTab(elContainer, selectable, el, next = true) {
   const universe = elContainer.querySelectorAll(selectable);
-  const list = Array.prototype.filter.call(universe, function(item) {return item.tabIndex >= "0"});
+  const list = Array.prototype.filter.call(universe, function (item) {
+    return item.tabIndex >= "0";
+  });
   const index = list.indexOf(el);
   const resultIndex = next ? index + 1 : index - 1;
 
   if (resultIndex === -1) {
     // Jump to last element if out of start o list
-    return list[list.length -1];
+    return list[list.length - 1];
   } else if (resultIndex < list.length) {
-    return list[resultIndex]
+    return list[resultIndex];
   }
 
   // Jump to first element if out of end of list
-  return list[0]
+  return list[0];
 }
 
 /**
@@ -36,5 +37,8 @@ export function findTab(elContainer, selectable, el, next = true) {
 export function isOutOfBottomViewport(el) {
   const bounding = el.getBoundingClientRect();
 
-  return bounding.bottom > (window.innerHeight || document.documentElement.clientHeight);
+  return (
+    bounding.bottom >
+    (window.innerHeight || document.documentElement.clientHeight)
+  );
 }

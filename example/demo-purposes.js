@@ -1,5 +1,4 @@
 window.addEventListener("load", (event) => {
-
   // Simple multiselect example
   const selectActions1 = new SelectActions({
     id: "#select-0",

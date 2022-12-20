@@ -116,7 +116,7 @@
   border: solid 1px var(--color-border);
   transition: border-color 0.3s ease-in-out;
   display: none;
-  margin: -.8px -1px;
+  margin: -0.8px -1px;
   position: absolute;
   top: 0;
   left: 0;
@@ -125,7 +125,7 @@
 }
 
 .sa-dropdown-search {
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   color: var(--color-text-normal);
   padding: 5px 34px 6px 5px;
   border-top-left-radius: var(--border-radius-base);
@@ -202,7 +202,7 @@
 
 .sa-dropdown .sa-maxselected {
   width: calc(100% - 15px);
-  pointer-events: auto;;
+  pointer-events: auto;
 }
 
 .sa-all-selector {
@@ -215,9 +215,9 @@
   color: var(--color-text-placeholder);
 }
 .sa-not-found:hover,
-.sa-not-found:hover>label,
+.sa-not-found:hover > label,
 .sa-disabled-option:hover,
-.sa-disabled-option:hover>label {
+.sa-disabled-option:hover > label {
   cursor: auto;
   background-color: transparent;
 }
