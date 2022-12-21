@@ -1,44 +1,79 @@
-import { findTab, isOutOfBottomViewport } from "./utils";
+import { findTab, isOutOfBottomViewport, newElement, mergeObjects } from "./utils";
+
+const defaultConfig = {
+  borderRadius: 3,
+  hideX: false,
+  maxHeight: "180px",
+  maxWidth: "360px",
+  minWidth: "200px",
+  placeholder: "Click and Select",
+  search: true,
+  selectAll: false,
+  select: undefined,
+  selectData: [],
+  showOnlySelectionCount: false,
+  txtAll: "All",
+  txtNotFound: "Not found",
+  txtRemove: "Remove",
+  txtSearch: "Search field",
+  txtSelected: "Selected",
+  txtSelectedSingular: "Selected",
+  useStyles: true,
+  observeChanges: false,
+  callback: undefined,
+}
 
 export default class SelectActions {
   constructor(params) {
-    this.config = {
-      id: undefined,
-      search: true,
-      hideX: false,
-      useStyles: true,
-      placeholder: "Click and Select",
-      txtSelected: "Selected",
-      txtSelectedSingular: "Selected",
-      txtAll: "All",
-      txtRemove: "Remove",
-      txtSearch: "Search field",
-      txtNotFound: "Not found",
-      minWidth: "200px",
-      maxWidth: "360px",
-      maxHeight: "180px",
-      borderRadius: 6,
-      selectAll: false,
-      showOnlySelectionCount: false,
-      ...params,
-    };
-
+    this.config = mergeObjects(defaultConfig, params);
     this.init();
   }
 
   init() {
     const self = this;
-    const selectID = self.config.id;
+    const select = self.config.select;
 
     if (this.config.useStyles) {
       self._createStyles();
     }
 
-    selectID
-      ? self._createDropdown(document.querySelector(selectID))
-      : document
-          .querySelectorAll("select")
-          .map((el) => self._createDropdown(el));
+    if (select) {
+      // Create SimpleActions with defined element
+      if (typeof select === "object") {
+        return  self._createDropdown(select);
+      }
+
+      // Create SimpleActions with string selector
+      return self._createDropdown(document.querySelector(select));
+    }
+
+    // Create SimpleActions with all selects in document
+     return document
+        .querySelectorAll("select")
+        .map((el) => self._createDropdown(el));
+  }
+
+  /**
+   * Creates and appends new option elements to a given element.
+   *
+   * @param {Array} listOfValues - An array of objects containing option values and labels.
+   * @param {HTMLElement} elToAppend - The element (a select) to which the new option elements
+   * will be appended.
+   *
+   * @return {undefined}
+   */
+  createOptions(listOfValues, elToAppend) {
+    for (const opt of listOfValues) {
+      let optElement = newElement("option", {
+        value: opt.value ? opt.value : "",
+        disabled: opt.disabled ? opt.disabled : false,
+        selected: opt.selected ? opt.selected : false,
+      });
+
+      optElement.innerHTML = opt.label ? opt.label : opt.value;
+
+      elToAppend.appendChild(optElement);
+    }
   }
 
   /**
@@ -50,21 +85,49 @@ export default class SelectActions {
    */
   _createDropdown(selectAction) {
     const self = this;
-    const div = this._newElement("div", {
+
+    // Select empty and data served as an array of objects
+    if (!selectAction.options.length && self.config.selectData.length) {
+      self.createOptions(self.config.selectData, selectAction);
+    }
+
+    const div = newElement("div", {
       class: "sa-dropdown",
       tabIndex: "0",
     });
-    const dropdownListWrapper = this._newElement("div", {
+
+    // Observer to original selector if options change update main dropdown
+    if (self.config.observeChanges) {
+      const observer = new MutationObserver(
+        function (mutationsList, observer) {
+          for(let mutation of mutationsList) {
+            if (mutation.type === 'childList' && mutation.removedNodes.length > 0) {
+              selectAction.selectedIndex = 0;
+              selectAction.dispatchEvent(new Event("change"));
+              div.remove();
+              self._createDropdown(mutation.target);
+              this.disconnect();
+            }
+          }
+        }
+      );
+
+      observer.observe(selectAction, { childList: true });
+    }
+
+
+    const dropdownListWrapper = newElement("div", {
       class: "sa-dropdown-list-wrapper",
     });
-    const dropdownList = this._newElement("div", {
+    const dropdownList = newElement("div", {
       class: "sa-dropdown-list",
     });
 
+    // Insert new SelectActions next original select element
     selectAction.parentNode.insertBefore(div, selectAction.nextSibling);
 
     // Creating search input field
-    const search = this._newElement("input", {
+    const search = newElement("input", {
       class: ["sa-dropdown-search"].concat([
         self.config.searchInput?.class ?? "form-control",
       ]),
@@ -91,7 +154,7 @@ export default class SelectActions {
     });
 
     // Creating multiple or simple
-    div.previousElementSibling.multiple
+    selectAction.multiple
       ? self._populateMultiSelect(
           dropdownList,
           dropdownListWrapper,
@@ -125,7 +188,7 @@ export default class SelectActions {
    * @param {HTMLElement} search - The search input element for the simple select.
    * @param {HTMLElement} dropdownListWrapper - The element that wraps around the dropdown list and search input.
    */
-  _populateSimpleSelect(
+  async _populateSimpleSelect(
     div,
     dropdownList,
     selectAction,
@@ -135,34 +198,33 @@ export default class SelectActions {
     const self = this;
     Array.from(selectAction.options).map((option) => {
       const isDisabled = option.disabled;
-      let optionElement = self._newElement("div", {
-        srcElement: option,
+      let optionElement = newElement("div", {
+        target: option,
         class: isDisabled
           ? ["sa-option", "sa-unsearchable", "sa-disabled-option"]
           : "sa-option",
         tabIndex: isDisabled ? "-1" : "0",
       });
       optionElement.appendChild(
-        self._newElement("label", { text: option.text })
+        newElement("label", { text: option.text })
       );
 
       dropdownList.appendChild(optionElement);
 
       if (!option.disabled) {
-        // Add eventListener to select element
-        optionElement.addEventListener("click", () => {
-          optionElement.srcElement.selected = true;
-          selectAction.dispatchEvent(new Event("change"));
-          self._closeSelect(div, search, dropdownList, dropdownListWrapper);
-        });
+        const events = ["click", "keypress"];
 
-        optionElement.addEventListener("keypress", () => {
-          if (event.key === "Enter" || event.key === " ") {
-            optionElement.srcElement.selected = true;
+        for (const eventName of events) {
+          // Add eventListener to select element
+          optionElement.addEventListener(eventName, async function () {
+            optionElement.target.selected = true;
             selectAction.dispatchEvent(new Event("change"));
             self._closeSelect(div, search, dropdownList, dropdownListWrapper);
-          }
-        });
+            if (self.config.callback) {
+              await self.config.callback(self);
+            }
+          });
+        }
 
         option.optionElement = optionElement;
       }
@@ -179,15 +241,16 @@ export default class SelectActions {
   _populateMultiSelect(dropdownList, dropdownListWrapper, selectAction) {
     const self = this;
 
+    // Setting select all option
     if (self.config.selectAll || selectAction.attributes["select-all"]) {
-      let optionElementAll = self._newElement("div", {
+      let optionElementAll = newElement("div", {
         class: ["sa-unsearchable", "sa-all-selector", "sa-option"],
       });
 
-      let optionCheckbox = self._newElement("input", { type: "checkbox" });
+      let optionCheckbox = newElement("input", { type: "checkbox" });
       optionElementAll.appendChild(optionCheckbox);
       optionElementAll.appendChild(
-        self._newElement("label", { text: self.config.txtAll })
+        newElement("label", { text: self.config.txtAll })
       );
 
       optionElementAll.addEventListener("click", () => {
@@ -200,7 +263,7 @@ export default class SelectActions {
           .forEach((i) => {
             if (i.style.display !== "none") {
               i.querySelector("input").checked = ch;
-              i.srcElement.selected = ch;
+              i.target.selected = ch;
             }
           });
 
@@ -212,18 +275,21 @@ export default class SelectActions {
 
       dropdownList.appendChild(optionElementAll);
     }
+
     Array.from(selectAction.options).map((option) => {
-      let optionElement = self._newElement("div", {
-        srcElement: option,
+      const optionElement = newElement("div", {
+        target: option,
         class: "sa-option",
       });
-      let optionCheckbox = self._newElement("input", {
+
+      const optionCheckbox = newElement("input", {
         type: "checkbox",
         checked: option.selected,
       });
+
       optionElement.appendChild(optionCheckbox);
       optionElement.appendChild(
-        self._newElement("label", { text: option.text })
+        newElement("label", { text: option.text })
       );
 
       optionElement.addEventListener("click", () => {
@@ -235,7 +301,7 @@ export default class SelectActions {
 
         optionElement.querySelector("input").checked =
           !optionElement.querySelector("input").checked;
-        optionElement.srcElement.selected = !optionElement.srcElement.selected;
+        optionElement.target.selected = !optionElement.target.selected;
         selectAction.dispatchEvent(new Event("change"));
       });
 
@@ -402,10 +468,10 @@ export default class SelectActions {
         return;
       }
 
-      const nfDiv = self._newElement("div", {
+      const nfDiv = newElement("div", {
         class: ["sa-option", "sa-not-found"],
       });
-      const nfLabel = self._newElement("label", {
+      const nfLabel = newElement("label", {
         text: self.config.txtNotFound,
       });
 
@@ -516,7 +582,7 @@ export default class SelectActions {
           ? self.config.txtSelected
           : self.config.txtSelectedSingular;
       div.appendChild(
-        self._newElement("span", {
+        newElement("span", {
           class: ["sa-text", "sa-option-text", "sa-maxselected"],
           text: selectedLength + " " + txtAfterCounter,
           title: `${txtAfterCounter}: \n[ ${selected
@@ -525,15 +591,15 @@ export default class SelectActions {
         })
       );
     } else {
-      const isMultiple = div.previousElementSibling.multiple;
+      const isMultiple = selectAction.multiple;
 
       selected.map((option) => {
         const classList = ["sa-text"];
 
-        let span = self._newElement("span", {
+        let span = newElement("span", {
           class: classList,
           text: option.text,
-          srcElement: option,
+          target: option,
         });
 
         div.appendChild(span);
@@ -543,7 +609,7 @@ export default class SelectActions {
 
           if (!self.config.hideX) {
             span.prepend(
-              self._newElement("span", {
+              newElement("span", {
                 class: ["sa-del", "sa-option-del"],
                 text: "X",
                 title: self.config.txtRemove,
@@ -565,7 +631,7 @@ export default class SelectActions {
           div.style = "justify-content: space-between; align-items: center";
           if (!option.disabled && !self.config.hideX) {
             div.append(
-              self._newElement("span", {
+              newElement("span", {
                 class: ["sa-del", "sa-option-del", "sa-simple-del"],
                 text: "X",
                 title: self.config.txtRemove,
@@ -589,7 +655,7 @@ export default class SelectActions {
 
     if (selectAction.selectedOptions?.length === 0) {
       div.appendChild(
-        self._newElement("span", {
+        newElement("span", {
           class: ["sa-ph", "sa-placeholder"],
           text:
             selectAction.attributes?.placeholder?.value ??
@@ -606,7 +672,7 @@ export default class SelectActions {
    * @param {HTMLElement} div - The div element containing the multiselect field.
    */
   _removeOpt(span, div, selectAction) {
-    span.srcElement.optionElement.dispatchEvent(new Event("click"));
+    span.target.optionElement.dispatchEvent(new Event("click"));
     this._refresh(div, selectAction);
   }
 
@@ -617,47 +683,9 @@ export default class SelectActions {
    * @param {HTMLElement} div - The div element containing the multiselect field.
    */
   _cleanField(span, div, selectAction) {
-    span.srcElement.parentNode.selectedIndex = 0;
+    span.target.parentNode.selectedIndex = 0;
     selectAction.dispatchEvent(new Event("change"));
     this._refresh(div, selectAction);
-  }
-
-  /**
-   * Creates a new element and sets its attributes and content based on the provided parameters.
-   *
-   * @param {string} tag - The tag name of the element to be created.
-   * @param {Object} [params] - An object containing the attributes and content to be set on the element.
-   * @param {(string|string[])} [params.class] - A class name or array of class names to be set on the element.
-   * @param {Object} [params.style] - An object containing style properties and values to be set on the element.
-   * @param {string} [params.text] - The text content to be set on the element.
-   *
-   * @returns {Element} The newly created element.
-   */
-  _newElement(tag, params) {
-    let el = document.createElement(tag);
-    if (params) {
-      Object.keys(params).forEach((key) => {
-        if (key === "class") {
-          Array.isArray(params[key])
-            ? params[key].forEach((o) => (o !== "" ? el.classList.add(o) : 0))
-            : params[key] !== ""
-            ? el.classList.add(params[key])
-            : 0;
-        } else if (key === "style") {
-          Object.keys(params[key]).forEach((value) => {
-            el.style[value] = params[key][value];
-          });
-        } else if (key === "text") {
-          params[key] === ""
-            ? (el.innerHTML = "&nbsp;")
-            : (el.innerText = params[key]);
-        } else {
-          el[key] = params[key];
-        }
-      });
-    }
-
-    return el;
   }
 
   /**
@@ -665,25 +693,29 @@ export default class SelectActions {
    *
    * @param {string} tag - The type of element to create.
    * @param {Object} params - An object containing the attributes to set on the new element.
+   *
    * @return {HTMLElement} - The newly created element.
    */
   _createStyles() {
     const self = this;
+    // TODO: create more customizations options
 
     let styles = {
-      ":root": {
-        "--border-radius--base": `${parseInt(self.config.borderRadius)}px`,
-        "--border-radius--small": `${
-          parseInt(self.config.borderRadius) * 0.75
-        }px`,
-      },
       ".sa-dropdown": {
         "min-width": `${self.config.minWidth}`,
         "max-width": `${self.config.maxWidth}`,
+        "border-radius": `${parseInt(self.config.borderRadius)}px`,
+      },
+      ".sa-dropdown-list-wrapper": {
+        "border-top-left-radius": `${parseInt(self.config.borderRadius) * .40}px`,
+        "border-top-right-radius": `${parseInt(self.config.borderRadius) * .40}px`,
+      },
+      ".sa-dropdown-search": {
+        "border-radius": `${parseInt(self.config.borderRadius)}px`,
       },
       ".sa-dropdown-list": {
         "max-height": `${self.config.maxHeight}`,
-      },
+      }
     };
 
     const style = document.createElement("style");
