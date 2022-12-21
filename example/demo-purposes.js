@@ -47,49 +47,52 @@ window.addEventListener("load", (event) => {
       { value: "Mac" },
     ],
     hideX: true,
-    callback: async function(mainInstance) {
+    callback: async function (mainInstance) {
       mainValue = mainInstance.config.select.value;
-      const secondaryOptions = mainValue === "Mac" ? [
-          { disabled: true, selected: true, label: "Select an OS for your Mac" },
-          { value: "macOS Ventura" },
-          { value: "macOS Monterey" },
-          { value: "Asahi Linux" }
-      ] : [
-          { disabled: true, selected: true, label: "Select an OS for you PC" },
-          { value: "ArchLinux" },
-          { value: "Debian" },
-          { value: "Windows 10" },
-          { value: "Ubuntu" }
-      ];
+      const secondaryOptions =
+        mainValue === "Mac"
+          ? [
+              {
+                disabled: true,
+                selected: true,
+                label: "Select an OS for your Mac",
+              },
+              { value: "macOS Ventura" },
+              { value: "macOS Monterey" },
+              { value: "Asahi Linux" },
+            ]
+          : [
+              {
+                disabled: true,
+                selected: true,
+                label: "Select an OS for you PC",
+              },
+              { value: "ArchLinux" },
+              { value: "Debian" },
+              { value: "Windows 10" },
+              { value: "Ubuntu" },
+            ];
 
       /* Example of waiting for data to be loaded from API */
 
       secondarySelect.innerHTML = "";
-      SelectActions.createOptions(
-        [{ label: "Loading..." }],
-        secondarySelect
-      );
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      SelectActions.createOptions([{ label: "Loading..." }], secondarySelect);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       /* End of waiting timer example */
 
       // Emptyng select
       secondarySelect.innerHTML = "";
       // Calling funciton to create options
-      SelectActions.createOptions(
-        secondaryOptions,
-        secondarySelect
-      );
-    }
+      SelectActions.createOptions(secondaryOptions, secondarySelect);
+    },
   });
 
   const selectActions5 = new SelectActions({
     select: secondarySelect,
-    selectData: [
-      { label: "Select value in previous select" },
-    ],
+    selectData: [{ label: "Select value in previous select" }],
     hideX: true,
-    observeChanges: true
+    observeChanges: true,
   });
 
   /*

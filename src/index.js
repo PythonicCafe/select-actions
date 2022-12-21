@@ -5,4 +5,3 @@ import { createOptions } from "./utils";
 SelectActions.createOptions = createOptions;
 
 export default SelectActions;
-

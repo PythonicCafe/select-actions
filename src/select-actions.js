@@ -1,4 +1,9 @@
-import { findTab, isOutOfBottomViewport, newElement, mergeObjects } from "./utils";
+import {
+  findTab,
+  isOutOfBottomViewport,
+  newElement,
+  mergeObjects,
+} from "./utils";
 
 const defaultConfig = {
   borderRadius: 3,
@@ -21,7 +26,7 @@ const defaultConfig = {
   useStyles: true,
   observeChanges: false,
   callback: undefined,
-}
+};
 
 export default class SelectActions {
   constructor(params) {
@@ -40,7 +45,7 @@ export default class SelectActions {
     if (select) {
       // Create SimpleActions with defined element
       if (typeof select === "object") {
-        return  self._createDropdown(select);
+        return self._createDropdown(select);
       }
 
       // Create SimpleActions with string selector
@@ -48,9 +53,9 @@ export default class SelectActions {
     }
 
     // Create SimpleActions with all selects in document
-     return document
-        .querySelectorAll("select")
-        .map((el) => self._createDropdown(el));
+    return document
+      .querySelectorAll("select")
+      .map((el) => self._createDropdown(el));
   }
 
   /**
@@ -98,23 +103,23 @@ export default class SelectActions {
 
     // Observer to original selector if options change update main dropdown
     if (self.config.observeChanges) {
-      const observer = new MutationObserver(
-        function (mutationsList, observer) {
-          for(let mutation of mutationsList) {
-            if (mutation.type === 'childList' && mutation.removedNodes.length > 0) {
-              selectAction.selectedIndex = 0;
-              selectAction.dispatchEvent(new Event("change"));
-              div.remove();
-              self._createDropdown(mutation.target);
-              this.disconnect();
-            }
+      const observer = new MutationObserver(function (mutationsList, observer) {
+        for (let mutation of mutationsList) {
+          if (
+            mutation.type === "childList" &&
+            mutation.removedNodes.length > 0
+          ) {
+            selectAction.selectedIndex = 0;
+            selectAction.dispatchEvent(new Event("change"));
+            div.remove();
+            self._createDropdown(mutation.target);
+            this.disconnect();
           }
         }
-      );
+      });
 
       observer.observe(selectAction, { childList: true });
     }
-
 
     const dropdownListWrapper = newElement("div", {
       class: "sa-dropdown-list-wrapper",
@@ -205,9 +210,7 @@ export default class SelectActions {
           : "sa-option",
         tabIndex: isDisabled ? "-1" : "0",
       });
-      optionElement.appendChild(
-        newElement("label", { text: option.text })
-      );
+      optionElement.appendChild(newElement("label", { text: option.text }));
 
       dropdownList.appendChild(optionElement);
 
@@ -288,9 +291,7 @@ export default class SelectActions {
       });
 
       optionElement.appendChild(optionCheckbox);
-      optionElement.appendChild(
-        newElement("label", { text: option.text })
-      );
+      optionElement.appendChild(newElement("label", { text: option.text }));
 
       optionElement.addEventListener("click", () => {
         const optionElementAll =
@@ -707,15 +708,19 @@ export default class SelectActions {
         "border-radius": `${parseInt(self.config.borderRadius)}px`,
       },
       ".sa-dropdown-list-wrapper": {
-        "border-top-left-radius": `${parseInt(self.config.borderRadius) * .40}px`,
-        "border-top-right-radius": `${parseInt(self.config.borderRadius) * .40}px`,
+        "border-top-left-radius": `${
+          parseInt(self.config.borderRadius) * 0.4
+        }px`,
+        "border-top-right-radius": `${
+          parseInt(self.config.borderRadius) * 0.4
+        }px`,
       },
       ".sa-dropdown-search": {
         "border-radius": `${parseInt(self.config.borderRadius)}px`,
       },
       ".sa-dropdown-list": {
         "max-height": `${self.config.maxHeight}`,
-      }
+      },
     };
 
     const style = document.createElement("style");
