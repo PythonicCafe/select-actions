@@ -225,4 +225,8 @@
 .sa-text {
   line-height: 1.45rem;
   pointer-events: none;
+  overflow: hidden;
+  width: 70%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

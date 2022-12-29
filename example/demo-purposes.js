@@ -95,6 +95,12 @@ window.addEventListener("load", (event) => {
     observeChanges: true,
   });
 
+  // Simple select example
+  const selectActions6 = new SelectActions({
+    select: document.querySelector("#select-6"),
+    externalDataUrl: "https://api.artic.edu/api/v1/artworks",
+  });
+
   /*
     -- For demo purposes --
     Loop bind all selects with updateResult class

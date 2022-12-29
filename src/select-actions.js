@@ -1,3 +1,4 @@
+import ApiRequest from "./api-request";
 import {
   findTab,
   isOutOfBottomViewport,
@@ -25,6 +26,7 @@ const defaultConfig = {
   txtSelectedSingular: "Selected",
   useStyles: true,
   observeChanges: false,
+  externalDataUrl: '',
   callback: undefined,
 };
 
@@ -37,6 +39,10 @@ export default class SelectActions {
   init() {
     const self = this;
     const select = self.config.select;
+
+    if(self.config.externalDataUrl) {
+      self.apiRequest = new ApiRequest(self.config.externalDataUrl);
+    }
 
     if (this.config.useStyles) {
       self._createStyles();
@@ -71,7 +77,7 @@ export default class SelectActions {
     for (const opt of listOfValues) {
       let optElement = newElement("option", {
         value: opt.value ? opt.value : "",
-        disabled: opt.disabled ? opt.disabled : false,
+       disabled: opt.disabled ? opt.disabled : false,
         selected: opt.selected ? opt.selected : false,
       });
 
@@ -88,12 +94,14 @@ export default class SelectActions {
    *
    * @returns {void}
    */
-  _createDropdown(selectAction) {
+  async _createDropdown(selectAction) {
     const self = this;
 
     // Select empty and data served as an array of objects
     if (!selectAction.options.length && self.config.selectData.length) {
       self.createOptions(self.config.selectData, selectAction);
+    } else if (self.config.externalDataUrl) {
+      await self.apiRequest.createOptions(selectAction);
     }
 
     const div = newElement("div", {
@@ -222,7 +230,7 @@ export default class SelectActions {
           optionElement.addEventListener(eventName, async function () {
             optionElement.target.selected = true;
             selectAction.dispatchEvent(new Event("change"));
-            self._closeSelect(div, search, dropdownList, dropdownListWrapper);
+            await self._closeSelect(div, search, dropdownList, dropdownListWrapper);
             if (self.config.callback) {
               await self.config.callback(self);
             }
@@ -338,8 +346,8 @@ export default class SelectActions {
     const self = this;
 
     // Inputs will fire update dropdown elements
-    search.addEventListener("input", () => {
-      self._updateOptionsDropdown(search, dropdownList, dropdownListWrapper);
+    search.addEventListener("input", async () => {
+      await self._updateOptionsDropdown(search, dropdownList, dropdownListWrapper);
     });
 
     // EventListener to open select
@@ -353,7 +361,7 @@ export default class SelectActions {
     });
 
     // Detect key pressed and interact with dropdown
-    div.addEventListener("keydown", (event) => {
+    div.addEventListener("keydown", async (event) => {
       const inputSearch = div.querySelector(".sa-dropdown-search.form-control");
       const dropdownIsHide =
         div.querySelector(".sa-dropdown-list-wrapper").style.display !== "flex";
@@ -372,7 +380,7 @@ export default class SelectActions {
         }
       } else if (event.key === "Escape") {
         // Dropdown close and focus in select
-        self._closeSelect(div, search, dropdownList, dropdownListWrapper);
+        await self._closeSelect(div, search, dropdownList, dropdownListWrapper);
         self._refresh(div, selectAction);
         div.focus();
       } else if (!dropdownIsHide) {
@@ -405,15 +413,21 @@ export default class SelectActions {
     });
 
     // EventListener to close select if open and clickout
-    document.addEventListener("click", (event) => {
+    document.addEventListener("click", async (event) => {
       if (
         !div.contains(event.target) &&
         div.dropdownListWrapper.style.display === "flex"
       ) {
-        self._closeSelect(div, search, dropdownList, dropdownListWrapper);
+        await self._closeSelect(div, search, dropdownList, dropdownListWrapper);
         self._refresh(div, selectAction);
       }
     });
+  }
+
+  normalizeText(text) {
+    return text.normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
   }
 
   /**
@@ -423,10 +437,10 @@ export default class SelectActions {
    * @param {Element} dropdownList - The dropdown list element to be updated.
    * @param {Element} dropdownListWrapper - The wrapper element of the dropdown list.
    */
-  _updateOptionsDropdown(search, dropdownList, dropdownListWrapper) {
+  async _updateOptionsDropdown(search, dropdownList, dropdownListWrapper) {
     const self = this;
     const searchLength = search.value.length;
-    if (searchLength < 3 && searchLength > 0) {
+    if (searchLength && searchLength < 3) {
       return;
     }
 
@@ -437,21 +451,17 @@ export default class SelectActions {
       unsearchable.style.display = searchLength ? "none" : "flex";
     }
 
+    if (self.config.externalDataUrl) {
+      await self.apiRequest.createOptions(dropdownList, true, search.value);
+      return;
+    }
+
     dropdownList
       .querySelectorAll(":scope div:not(.sa-unsearchable)")
       .forEach((div) => {
-        let innerText = div
-          .querySelector("label")
-          .innerText.normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase();
+        let label = self.normalizeText(div.querySelector("label").innerText);
         if (
-          innerText.includes(
-            search.value
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-          )
+          label.includes(self.normalizeText(search.value))
         ) {
           div.style.display = "flex";
           notFound = false;
@@ -536,7 +546,7 @@ export default class SelectActions {
    * @param {Element} dropdownList - The dropdown list element to be closed.
    * @param {Element} dropdownListWrapper - The wrapper element of the dropdown list.
    */
-  _closeSelect(div, search, dropdownList, dropdownListWrapper) {
+  async _closeSelect(div, search, dropdownList, dropdownListWrapper) {
     const self = this;
 
     // Remove position styles
@@ -549,7 +559,7 @@ export default class SelectActions {
     searchInputStyle.borderTop = "0px";
     searchInputStyle.borderBottom = "0px";
     searchInput.value = "";
-    self._updateOptionsDropdown(search, dropdownList, dropdownListWrapper);
+    await self._updateOptionsDropdown(search, dropdownList, dropdownListWrapper);
     // Removing resizeObserver that defines serch position
     if (self.resizeObserver) {
       self.resizeObserver.unobserve(div);
