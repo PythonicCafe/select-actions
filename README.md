@@ -2,10 +2,6 @@
 
 Simple & customizable multi/single-select picker, written in vanilla JS
 
-## Demo
-
-[https://marcmatias.github.io/select-actions](https://marcmatias.github.io/select-actions)
-
 ## Installation
 
 ```bash
