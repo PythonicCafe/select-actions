@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Actions</title>
+    <link rel="stylesheet" href="./src/assets/css/main.css" />
+  </head>
+  <body>
+    <select multiple id="app" class="sa">
+      <option value="Singapore">Singapore</option>
+      <option value="Portland">Portland</option>
+      <option value="Halifax">Halifax</option>
+      <option value="London">London</option>
+      <option value="Seattle">Seattle</option>
+      <option value="Toronto">Toronto</option>
+      <option value="João Pessoa">João Pessoa</option>
+      <option value="New York">New York</option>
+      <option value="Buenos Aires">Buenos Aires</option>
+    </select>
+    <script type="module">
+      import SelectActions from "/src/main"
+      const app = new SelectActions("#app")
+    </script>
+  </body>
+</html>

@@ -1,0 +1,121 @@
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.sa-container *, 
+.sa-container * :before,
+.sa-container * :after {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+
+.sa-container {
+  position: relative;
+  width: 200px;
+}
+
+.sa {
+  display: none;
+}
+
+.sa-blur {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.sa-select {
+  border: 1px solid gray;
+  border-radius: .25rem;
+  padding: 4px;
+  user-select: none;
+  cursor: pointer;
+  z-index: 10;
+  color: gray;
+  font-size: .83rem;
+  font-family: sans;
+}
+
+.sa-dropdown {
+  border: 1px solid gray;
+  background: white;
+  border-radius: .25rem;
+  display: none;
+  z-index: 10;
+}
+
+.sa-select,
+.sa-dropdown {
+  position: absolute;
+  width: 100%;
+}
+
+.sa-dropdown__input-search {
+  font-family: sans;
+  font-size: .83rem;
+  padding: 4px;
+  border: 1px solid gray;
+  border-radius: .25rem;
+  width: 100%;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  outline: none;
+}
+
+.sa-dropdown__option-list {
+  margin: 0px;
+  list-style: none;
+  max-height: 150px;
+  overflow-y: scroll;
+  padding: 6px 0px;
+}
+
+.sa-list-li {
+  display: flex;
+  align-items: center;
+}
+
+.sa-list-li:hover {
+  background-color: #ccc;
+}
+
+.sa-list-li__label {
+  font-size: .8rem;
+  padding: 4px 0px;
+  word-break: break-all;
+  flex-grow: 1;
+  padding-right: 8px;
+  color: #1f2937;
+  user-select: none;
+}
+
+.sa-list-li__label--empty {
+  padding-left: 8px;
+}
+
+.sa-list-li__checkbox {
+  min-width: 30px;
+  height: 14px;
+  accent-color: #2563eb;
+}
+
+/* Scroll Horizontal */
+.sa-container ::-webkit-scrollbar {
+    height: 12px;
+    width: 4px;
+    background: #e2e8f0;
+}
+
+.sa-container ::-webkit-scrollbar-thumb {
+    background: #64748b;
+    -webkit-border-radius: .25rem;
+}
+
