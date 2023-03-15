@@ -54,7 +54,7 @@ class Model {
     );
 
     if (this.#options.length === 0) {
-      this.#options = [{ value: "", text: "Nothing found" }];
+      this.#options = [{ text: "Nothing found" }];
     }
     this.#commit(this.#options);
   }

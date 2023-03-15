@@ -1,20 +1,17 @@
 import Model from "../models/Model";
 import View from "../views/View";
-import { getElement } from "../../utils";
 
 /**
  * @class SelectActions Controller
- *
- * Links the user input and the view output.
  *
  * @param model
  * @param view
  */
 class SelectActions {
   constructor(select) {
-    this.model = new Model();
-    this.view = new View(select);
     this.select = select;
+    this.model = new Model();
+    this.view = new View(this.select);
 
     // Explicit this binding
     this.model.bindOptionListChanged(this.onOptionListChanged.bind(this));
@@ -22,7 +19,7 @@ class SelectActions {
     this.view.bindSearchOption(this.handleSearchOption.bind(this));
 
     // Set initial options to data from HTML select options
-    this.model.options = getElement(this.select).options;
+    this.model.options = this.view.app.options;
   }
 
   onOptionListChanged(options) {

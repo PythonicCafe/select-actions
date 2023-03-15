@@ -19,6 +19,10 @@ body {
 }
 
 .sa {
+  padding: 2px;
+}
+
+.sa select {
   display: none;
 }
 
@@ -36,10 +40,10 @@ body {
   padding: 4px;
   user-select: none;
   cursor: pointer;
-  z-index: 10;
   color: gray;
   font-size: 0.83rem;
   font-family: sans;
+  position: relative;
 }
 
 .sa-dropdown {
@@ -48,18 +52,21 @@ body {
   border-radius: 0.25rem;
   display: none;
   z-index: 10;
-}
-
-.sa-select,
-.sa-dropdown {
   position: absolute;
+  top: 0;
   width: 100%;
 }
 
-.sa-dropdown__input-search {
+.sa-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sa-search__input {
   font-family: sans;
   font-size: 0.83rem;
-  padding: 4px;
+  padding: 4px 26px 4px 4px;
   border: 1px solid gray;
   border-radius: 0.25rem;
   width: 100%;
@@ -69,6 +76,29 @@ body {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
   outline: none;
+}
+
+.sa-search__clear {
+  position: absolute;
+  right: 4px;
+  line-height: 0px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.bi-x {
+  background-color: #ccc;
+  border-radius: 50%;
+}
+
+.bi-chevron-down {
+  position: absolute;
+  line-height: 0px;
+  right: 8px;
+  width: 13px;
+  top: 6px;
+  pointer-events: none;
 }
 
 .sa-dropdown__option-list {
