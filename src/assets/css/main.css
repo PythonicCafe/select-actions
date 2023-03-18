@@ -45,7 +45,7 @@ body {
   padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol';
-    background: var(--bg-color-normal);
+  background: var(--bg-color-normal);
 }
 
 .sa-container *,
@@ -99,10 +99,10 @@ body {
 .sa-selected-option {
   padding: 2px 22px 2px 4px;
   font-weight: 500;
-  font-size: .75rem;
+  font-size: 0.75rem;
   background: var(--selected-option-bg-color);
   color: var(--selected-option-color);
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   white-space: nowrap;
   position: relative;
   display: flex;
@@ -164,7 +164,7 @@ body {
   height: 14px;
   width: 14px;
   color: var(--icon-color);
-  transition: background .1s ease-in-out, outline-offset .1s ease-in-out;
+  transition: background 0.1s ease-in-out, outline-offset 0.1s ease-in-out;
   outline-offset: 0px;
 }
 
@@ -197,14 +197,14 @@ body {
   color: var(--select-button-color);
   height: 24px;
   cursor: pointer;
-  font-size: .7rem;
+  font-size: 0.7rem;
 }
 
 .sa-dropdown-button:hover {
   background-color: var(--select-button-hover-color);
 }
 
-.sa-button-all { 
+.sa-button-all {
   border-right: 1px solid var(--border-color);
 }
 

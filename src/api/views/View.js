@@ -16,19 +16,19 @@ class View {
     <div class="sa-main-container">
       <div class="sa-container">
         <div class="sa-select" tabindex="0">
-          ${ chevronDownIcon }
+          ${chevronDownIcon}
         </div>
         <div class="sa-dropdown">
           <div class="sa-search">
             <input class="sa-search__input" type="text" placeholder="Search" name="search" />
           </div>
-          ${ 
-            options.selectAllButtons ?
-              `<div class="sa-dropdown__buttons">
+          ${
+            options.selectAllButtons
+              ? `<div class="sa-dropdown__buttons">
                 <button class="sa-dropdown-button sa-button-all" data-value="all">Todos</button>
                 <button class="sa-dropdown-button sa-button-none" data-value="none">Nenhum</button>
               </div>`
-              : "" 
+              : ''
           }
           <ul class="sa-dropdown__option-list"></ul>
         </div>
@@ -107,7 +107,7 @@ class View {
 
   hideSelectButtonsAll(hide) {
     if (this.options.selectAllButtons) {
-      this.getElement(".sa-dropdown__buttons").style.display = hide ? "none" : "flex";
+      this.getElement('.sa-dropdown__buttons').style.display = hide ? 'none' : 'flex';
     }
   }
 
@@ -131,8 +131,8 @@ class View {
       this.getElement('.sa-selected-option').remove();
     }
 
-    if (this.getElement(".sa-selected__span")) {
-      this.getElement(".sa-selected__span").remove();
+    if (this.getElement('.sa-selected__span')) {
+      this.getElement('.sa-selected__span').remove();
     }
 
     // Render updated version
@@ -152,7 +152,7 @@ class View {
         label.prepend(input);
 
         if (option.checked) {
-          const selectedOption = createElement("div", "sa-selected-option");
+          const selectedOption = createElement('div', 'sa-selected-option');
           selectedOption.innerHTML = option.text;
           selectedOption.dataset.value = option.value;
           selectedOption.append(this.buttonClear());
@@ -167,11 +167,11 @@ class View {
       this.optionList.append(li);
     }
 
-    if (!this.getElement(".sa-selected-option")) {
+    if (!this.getElement('.sa-selected-option')) {
       // Select label create and add
-      const span = createElement("span", "sa-selected__span");
-      span.innerText = "Select";
-      this.getElement(".sa-select").append(span);
+      const span = createElement('span', 'sa-selected__span');
+      span.innerText = 'Select';
+      this.getElement('.sa-select').append(span);
     }
 
     // InputSearch clear button
@@ -179,11 +179,7 @@ class View {
 
     if (this.inputSearch.value.length > 0 && !clearButton) {
       this.hideSelectButtonsAll(true);
-      this.getElement('.sa-search').append(
-          this.buttonClear(this.clearInputSearch.bind(this),
-          ['sa-search__clear']
-        )
-      );
+      this.getElement('.sa-search').append(this.buttonClear(this.clearInputSearch.bind(this), ['sa-search__clear']));
     } else if (this.inputSearch.value.length === 0 && clearButton) {
       this.hideSelectButtonsAll(false);
       clearButton.remove();
@@ -201,17 +197,17 @@ class View {
 
     this.getElement('.sa-select').addEventListener('click', (event) => {
       if (
-        event.target.closest("button") &&
-        [...event.target.closest("button").classList].includes("sa-button__clear")
-      ){
-        handler(event.target.closest(".sa-selected-option").dataset.value);
+        event.target.closest('button') &&
+        [...event.target.closest('button').classList].includes('sa-button__clear')
+      ) {
+        handler(event.target.closest('.sa-selected-option').dataset.value);
       }
     });
   }
 
   bindChangeAllOption(handler) {
-    this.getElement(".sa-dropdown__buttons").addEventListener('click', (event) => {
-      const value = event.target.closest("button").dataset.value;
+    this.getElement('.sa-dropdown__buttons').addEventListener('click', (event) => {
+      const value = event.target.closest('button').dataset.value;
       handler(value);
     });
   }
@@ -221,7 +217,6 @@ class View {
       handler(event.target.value);
     });
   }
-
 }
 
 export default View;

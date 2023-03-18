@@ -44,14 +44,14 @@ class Model {
   }
 
   changeAllOption(value) {
-    let newValue = value === "all" ? true : false;
+    let newValue = value === 'all' ? true : false;
 
-    this.#options = this.#options.map((opt) =>
-      { return { value: opt.value, text: opt.text, checked: newValue } },
-    );
-    this.#defaultOptions = this.#defaultOptions.map((opt) =>
-      { return { value: opt.value, text: opt.text, checked: newValue } },
-    );
+    this.#options = this.#options.map((opt) => {
+      return { value: opt.value, text: opt.text, checked: newValue };
+    });
+    this.#defaultOptions = this.#defaultOptions.map((opt) => {
+      return { value: opt.value, text: opt.text, checked: newValue };
+    });
 
     this.#commit(this.#options);
   }
