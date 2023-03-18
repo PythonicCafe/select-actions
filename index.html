@@ -9,6 +9,8 @@
     <style>
       .main-section {
         display: flex;
+        flex-direction: column;
+        gap: 12px;
       }
     </style>
   </head>
@@ -28,23 +30,33 @@
         </select>
       </div>
       <div id="app2" class="sa">
-        <select multiple>
-          <option value="Singapore">Singapore</option>
-          <option value="Portland">Portland</option>
-          <option value="Halifax">Halifax</option>
-          <option value="London">London</option>
-          <option value="Seattle">Seattle</option>
-          <option value="Toronto">Toronto</option>
-          <option value="João Pessoa">João Pessoa</option>
-          <option value="New York">New York</option>
-          <option value="Buenos Aires">Buenos Aires</option>
-        </select>
+        <select></select>
       </div>
     </section>
     <script type="module">
       import SelectActions from '/src/main';
       const app = new SelectActions('#app');
-      const app2 = new SelectActions('#app2');
+      const app2 = new SelectActions(
+      '#app2', {
+          optionsData: [
+            {
+              "value": "Singapore",
+              "text": "Singapore",
+              "checked": false
+            },
+            {
+              "value": "Portland",
+              "text": "Portland",
+              "checked": false
+            },
+            {
+              "value": "Halifax",
+              "text": "Halifax",
+              "checked": false
+            },
+          ]
+        }
+      );
     </script>
   </body>
 </html>

@@ -1,42 +1,54 @@
 :root {
-  --bg-color-normal: white;
-  --bg-color-light: white;
-  --bg-color-richer: #e5e7eb;
-  --bg-color-highlight: #6b7280;
+  --white: white;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
 
-  --text-color-normal: #374151;
-  --text-color-light: #d1d5db;
-  --text-color-richer: #1f2937;
-  --text-color-highlight: #d1d5db;
-
-  --border-color: var(--bg-color-highlight);
-  --icon-bg-color: var(--bg-color-highlight);
-  --icon-color: var(--text-color-highlight);
-  --icon-hover-color: var(--bg-color-normal);
-  --outline-color: var(--text-color-richer);
-  --select-bg-color: var(--bg-color-light);
-  --select-button-bg-color: var(--bg-color-light);
-  --select-button-color: var(--text-color-richer);
-  --select-button-hover-color: var(--bg-color-richer);
-  --select-color: var(--text-color-highlight);
-  --selected-option-bg-color: var(--bg-color-richer);
-  --selected-option-color: var(--text-color-normal);
-  --selected-option-hover-color: var(--text-color-light);
-  --checkbox-color-accent: var(--bg-color-highlight);
+  --background: white;
+  --border-color: var(--gray-600);
+  --icon-bg-color: var(--gray-500);
+  --icon-color: var(--gray-100);
+  --icon-hover-color: var(--gray-200);
+  --icon-hover-bg-color: var(--gray-700);
+  --outline-color: var(--gray-600);
+  --select-bg-color: var(--white);
+  --select-button-bg-color: var(--gray-200);
+  --select-button-color: var(--gray-700);
+  --select-button-hover-color: var(--gray-100);
+  --select-option-color: var(--gray-800);
+  --select-color: var(--gray-600);
+  --selected-option-bg-color: var(--gray-200);
+  --selected-option-color: var(--gray-700);
+  --selected-option-hover-color: var(--gray-200);
+  --checkbox-color-accent: var(--gray-500);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color-normal: #111827;
-    --bg-color-normal: #111827;
-    --bg-color-light: #1f2937;
-    --bg-color-richer: #374151;
-    --bg-color-highlight: #4b5563;
-
-    --text-color-normal: #f9fafb;
-    --text-color-light: #4b5563;
-    --text-color-richer: #e5e7eb;
-    --text-color-highlight: #d1d5db;
+    --background: var(--gray-900);
+    --border-color: var(--gray-500);
+    --icon-bg-color: var(--gray-800);
+    --icon-color: var(--gray-100);
+    --icon-hover-color: var(--gray-700);
+    --icon-hover-bg-color: var(--gray-200);
+    --outline-color: var(--gray-300);
+    --select-bg-color: var(--gray-800);
+    --select-button-bg-color: var(--gray-700);
+    --select-button-color: var(--gray-200);
+    --select-option-color: var(--gray-200);
+    --select-button-hover-color: var(--gray-800);
+    --select-color: var(--gray-200);
+    --selected-option-bg-color: var(--gray-700);
+    --selected-option-color: var(--gray-200);
+    --selected-option-hover-color: var(--gray-600);
+    --checkbox-color-accent: var(--gray-500);
   }
 }
 
@@ -45,7 +57,7 @@ body {
   padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol';
-  background: var(--bg-color-normal);
+  background: var(--background);
 }
 
 .sa-container *,
@@ -96,6 +108,10 @@ body {
   user-select: none;
 }
 
+.sa-selected__span {
+  pointer-events: none;
+}
+
 .sa-selected-option {
   padding: 2px 22px 2px 4px;
   font-weight: 500;
@@ -109,9 +125,20 @@ body {
   align-items: center;
 }
 
+.sa-selected-option--single {
+  padding: 2px 4px;
+  background: transparent;
+}
+
+.sa-selected-option--counter {
+  justify-content: center;
+  width: 100%;
+  pointer-events: none;
+}
+
 .sa-dropdown {
   border: 1px solid var(--border-color);
-  background: var(--bg-color-light);
+  background: var(--select-bg-color);
   border-radius: 0.25rem;
   display: none;
   z-index: 20;
@@ -164,15 +191,11 @@ body {
   height: 14px;
   width: 14px;
   color: var(--icon-color);
-  transition: background 0.1s ease-in-out, outline-offset 0.1s ease-in-out;
-  outline-offset: 0px;
 }
 
 .bi-x:hover {
-  background: var(--icon-hover-color);
-  color: var(--icon-bg-color);
-  outline: 1px solid var(--outline-color);
-  outline-offset: 1px;
+  background: var(--icon-hover-bg-color);
+  color: var(--icon-hover-color);
 }
 
 .bi-chevron-down {
@@ -226,10 +249,14 @@ body {
   word-break: break-all;
   flex-grow: 1;
   padding-right: 8px;
-  color: var(--text-color-normal);
+  color: var(--select-option-color);
   user-select: none;
   display: flex;
   align-items: center;
+}
+
+.sa-list-li__label {
+  padding: 8px 12px;
 }
 
 .sa-list-li__label--empty {

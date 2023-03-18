@@ -12,13 +12,17 @@ class Model {
   }
 
   set options(options) {
-    this.#options = [...options].map((option) => {
-      return {
-        value: option.value,
-        text: option.innerHTML,
-        checked: option.selected,
-      };
-    });
+    if (options instanceof HTMLOptionsCollection) {
+      this.#options = [...options].map((option) => {
+        return {
+          value: option.value,
+          text: option.innerHTML,
+          checked: option.selected,
+        };
+      });
+    } else {
+      this.#options = options;
+    }
 
     this.#defaultOptions = this.#options;
     this.#commit(this.#options);
@@ -32,10 +36,17 @@ class Model {
     this.onOptionListChanged(options);
   }
 
-  toggleOption(value) {
-    this.#options = this.#options.map((opt) =>
-      opt.value === value ? { value: opt.value, text: opt.text, checked: !opt.checked } : opt,
-    );
+  selectOption(value, singleOption = false) {
+    if (singleOption) {
+      this.#options = this.#options.map((opt) => { return { value: opt.value, text: opt.text, checked: false } });
+      this.#options.find((opt) => opt.value === value).checked = true;
+      this.#defaultOptions = this.#defaultOptions.map((opt) => { return { value: opt.value, text: opt.text, checked: false } });
+    } else {
+      this.#options = this.#options.map((opt) =>
+        opt.value === value ? { value: opt.value, text: opt.text, checked: !opt.checked } : opt,
+      );
+    }
+
     this.#defaultOptions = this.#defaultOptions.map((opt) =>
       opt.value === value ? { value: opt.value, text: opt.text, checked: !opt.checked } : opt,
     );
