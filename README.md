@@ -18,10 +18,7 @@ Or direct import in HTML
 <script src="/dist/select-actions.min.js"></script>
 
 <!-- or directly from unpkg -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/select-actions@latest/dist/select-actions.min.css"
-/>
+<link rel="stylesheet" href="https://unpkg.com/select-actions@latest/dist/select-actions.min.css" />
 <script src="https://unpkg.com/select-actions@latest/dist/select-actions.min.js"></script>
 ```
 

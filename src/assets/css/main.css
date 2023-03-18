@@ -1,8 +1,51 @@
+:root {
+  --bg-color-normal: white;
+  --bg-color-light: white;
+  --bg-color-richer: #e5e7eb;
+  --bg-color-highlight: #6b7280;
+
+  --text-color-normal: #374151;
+  --text-color-light: #d1d5db;
+  --text-color-richer: #1f2937;
+  --text-color-highlight: #d1d5db;
+
+  --border-color: var(--bg-color-highlight);
+  --icon-bg-color: var(--bg-color-highlight);
+  --icon-color: var(--text-color-highlight);
+  --icon-hover-color: var(--bg-color-normal);
+  --outline-color: var(--text-color-richer);
+  --select-bg-color: var(--bg-color-light);
+  --select-button-bg-color: var(--bg-color-light);
+  --select-button-color: var(--text-color-richer);
+  --select-button-hover-color: var(--bg-color-richer);
+  --select-color: var(--text-color-highlight);
+  --selected-option-bg-color: var(--bg-color-richer);
+  --selected-option-color: var(--text-color-normal);
+  --selected-option-hover-color: var(--text-color-light);
+  --checkbox-color-accent: var(--bg-color-highlight);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color-normal: #111827;
+    --bg-color-normal: #111827;
+    --bg-color-light: #1f2937;
+    --bg-color-richer: #374151;
+    --bg-color-highlight: #4b5563;
+
+    --text-color-normal: #f9fafb;
+    --text-color-light: #4b5563;
+    --text-color-richer: #e5e7eb;
+    --text-color-highlight: #d1d5db;
+  }
+}
+
 body {
   margin: 0;
   padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol';
+    background: var(--bg-color-normal);
 }
 
 .sa-container *,
@@ -32,26 +75,46 @@ body {
   width: 100%;
   top: 0;
   left: 0;
+  z-index: 10;
 }
 
 .sa-select {
-  border: 1px solid gray;
+  align-items: center;
+  background: var(--select-bg-color);
   border-radius: 0.25rem;
-  padding: 4px;
-  user-select: none;
+  border: 1px solid var(--border-color);
+  color: var(--select-color);
   cursor: pointer;
-  color: gray;
-  font-size: 0.83rem;
+  display: flex;
+  flex-wrap: wrap;
   font-family: sans;
+  font-size: 0.83rem;
+  gap: 4px;
+  min-height: 30.3px;
+  padding: 4px 30px 4px 4px;
   position: relative;
+  user-select: none;
+}
+
+.sa-selected-option {
+  padding: 2px 22px 2px 4px;
+  font-weight: 500;
+  font-size: .75rem;
+  background: var(--selected-option-bg-color);
+  color: var(--selected-option-color);
+  border-radius: .25rem;
+  white-space: nowrap;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .sa-dropdown {
-  border: 1px solid gray;
-  background: white;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color-light);
   border-radius: 0.25rem;
   display: none;
-  z-index: 10;
+  z-index: 20;
   position: absolute;
   top: 0;
   width: 100%;
@@ -67,8 +130,10 @@ body {
   font-family: sans;
   font-size: 0.83rem;
   padding: 4px 26px 4px 4px;
-  border: 1px solid gray;
+  border: 1px solid var(--border-color);
   border-radius: 0.25rem;
+  background: var(--select-bg-color);
+  color: var(--select-color);
   width: 100%;
   border-top: 0px;
   border-left: 0px;
@@ -76,20 +141,38 @@ body {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
   outline: none;
+  min-height: 30.3px;
 }
 
-.sa-search__clear {
+.sa-button__clear {
   position: absolute;
   right: 4px;
   line-height: 0px;
-  background: none;
+  background: transparent;
   border: none;
   cursor: pointer;
+  overflow: display;
+}
+
+.sa-search__clear {
+  right: 8px;
 }
 
 .bi-x {
-  background-color: #ccc;
+  background: var(--icon-bg-color);
   border-radius: 50%;
+  height: 14px;
+  width: 14px;
+  color: var(--icon-color);
+  transition: background .1s ease-in-out, outline-offset .1s ease-in-out;
+  outline-offset: 0px;
+}
+
+.bi-x:hover {
+  background: var(--icon-hover-color);
+  color: var(--icon-bg-color);
+  outline: 1px solid var(--outline-color);
+  outline-offset: 1px;
 }
 
 .bi-chevron-down {
@@ -97,8 +180,32 @@ body {
   line-height: 0px;
   right: 8px;
   width: 13px;
-  top: 6px;
+  height: 100%;
+  bottom: 0;
   pointer-events: none;
+}
+
+.sa-dropdown__buttons {
+  display: flex;
+}
+
+.sa-dropdown-button {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--select-button-bg-color);
+  color: var(--select-button-color);
+  height: 24px;
+  cursor: pointer;
+  font-size: .7rem;
+}
+
+.sa-dropdown-button:hover {
+  background-color: var(--select-button-hover-color);
+}
+
+.sa-button-all { 
+  border-right: 1px solid var(--border-color);
 }
 
 .sa-dropdown__option-list {
@@ -106,16 +213,11 @@ body {
   list-style: none;
   max-height: 150px;
   overflow-y: scroll;
-  padding: 6px 0px;
-}
-
-.sa-list-li {
-  display: flex;
-  align-items: center;
+  padding: 4px 0px;
 }
 
 .sa-list-li:hover {
-  background-color: #ccc;
+  background-color: var(--selected-option-hover-color);
 }
 
 .sa-list-li__label {
@@ -124,8 +226,10 @@ body {
   word-break: break-all;
   flex-grow: 1;
   padding-right: 8px;
-  color: #1f2937;
+  color: var(--text-color-normal);
   user-select: none;
+  display: flex;
+  align-items: center;
 }
 
 .sa-list-li__label--empty {
@@ -135,7 +239,11 @@ body {
 .sa-list-li__checkbox {
   min-width: 30px;
   height: 14px;
-  accent-color: #2563eb;
+  accent-color: var(--checkbox-color-accent);
+}
+
+.sa-list-li__checkbox::before {
+  color: red;
 }
 
 /* Scroll Horizontal */

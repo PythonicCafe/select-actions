@@ -6,38 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Select Actions</title>
     <link rel="stylesheet" href="./src/assets/css/main.css" />
+    <style>
+.main-section {
+  display: flex;
+}
+    </style>
   </head>
   <body>
-    <div id="app" class="sa">
-      <select multiple>
-        <option value="Singapore">Singapore</option>
-        <option value="Portland">Portland</option>
-        <option value="Halifax">Halifax</option>
-        <option value="London">London</option>
-        <option value="Seattle">Seattle</option>
-        <option value="Toronto">Toronto</option>
-        <option value="João Pessoa">João Pessoa</option>
-        <option value="New York">New York</option>
-        <option value="Buenos Aires">Buenos Aires</option>
-      </select>
-    </div>
-    <div id="app2" class="sa">
-      <select multiple>
-        <option value="Singapore">Singapore</option>
-        <option value="Portland">Portland</option>
-        <option value="Halifax">Halifax</option>
-        <option value="London">London</option>
-        <option value="Seattle">Seattle</option>
-        <option value="Toronto">Toronto</option>
-        <option value="João Pessoa">João Pessoa</option>
-        <option value="New York">New York</option>
-        <option value="Buenos Aires">Buenos Aires</option>
-      </select>
-    </div>
+    <section class="main-section">
+      <div id="app" class="sa">
+        <select multiple>
+          <option value="Singapore">Singapore</option>
+          <option value="Portland">Portland</option>
+          <option value="Halifax">Halifax</option>
+          <option value="London">London</option>
+          <option value="Seattle">Seattle</option>
+          <option value="Toronto">Toronto</option>
+          <option value="João Pessoa">João Pessoa</option>
+          <option value="New York">New York</option>
+          <option value="Buenos Aires">Buenos Aires</option>
+        </select>
+      </div>
+      <div id="app2" class="sa">
+        <select multiple>
+          <option value="Singapore">Singapore</option>
+          <option value="Portland">Portland</option>
+          <option value="Halifax">Halifax</option>
+          <option value="London">London</option>
+          <option value="Seattle">Seattle</option>
+          <option value="Toronto">Toronto</option>
+          <option value="João Pessoa">João Pessoa</option>
+          <option value="New York">New York</option>
+          <option value="Buenos Aires">Buenos Aires</option>
+        </select>
+      </div>
+    </section>
     <script type="module">
-      import SelectActions from "/src/main";
-      const app = new SelectActions("#app");
-      const app2 = new SelectActions("#app2");
+      import SelectActions from '/src/main';
+      const app = new SelectActions('#app');
+      const app2 = new SelectActions('#app2');
     </script>
   </body>
 </html>

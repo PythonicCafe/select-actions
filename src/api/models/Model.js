@@ -34,14 +34,23 @@ class Model {
 
   toggleOption(value) {
     this.#options = this.#options.map((opt) =>
-      opt.value === value
-        ? { value: opt.value, text: opt.text, checked: !opt.checked }
-        : opt
+      opt.value === value ? { value: opt.value, text: opt.text, checked: !opt.checked } : opt,
     );
     this.#defaultOptions = this.#defaultOptions.map((opt) =>
-      opt.value === value
-        ? { value: opt.value, text: opt.text, checked: !opt.checked }
-        : opt
+      opt.value === value ? { value: opt.value, text: opt.text, checked: !opt.checked } : opt,
+    );
+
+    this.#commit(this.#options);
+  }
+
+  changeAllOption(value) {
+    let newValue = value === "all" ? true : false;
+
+    this.#options = this.#options.map((opt) =>
+      { return { value: opt.value, text: opt.text, checked: newValue } },
+    );
+    this.#defaultOptions = this.#defaultOptions.map((opt) =>
+      { return { value: opt.value, text: opt.text, checked: newValue } },
     );
 
     this.#commit(this.#options);
@@ -49,12 +58,10 @@ class Model {
 
   searchOption(value) {
     this.#options = this.#defaultOptions;
-    this.#options = this.#options.filter((option) =>
-      option.text.includes(value)
-    );
+    this.#options = this.#options.filter((option) => option.text.includes(value));
 
     if (this.#options.length === 0) {
-      this.#options = [{ text: "Nothing found" }];
+      this.#options = [{ text: 'Nothing found' }];
     }
     this.#commit(this.#options);
   }
