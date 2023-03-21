@@ -34,29 +34,36 @@
       </div>
     </section>
     <script type="module">
-      import SelectActions from '/src/main';
+      import { SelectActions, SelectActionsApi } from '/src/main';
       const app = new SelectActions('#app');
-      const app2 = new SelectActions(
-      '#app2', {
-          optionsData: [
-            {
-              "value": "Singapore",
-              "text": "Singapore",
-              "checked": false
-            },
-            {
-              "value": "Portland",
-              "text": "Portland",
-              "checked": false
-            },
-            {
-              "value": "Halifax",
-              "text": "Halifax",
-              "checked": false
-            },
-          ]
-        }
-      );
+      const app2 = new SelectActions('#app2', {
+        optionsData: [
+          {
+            value: 'Singapore',
+            text: 'Singapore',
+          },
+          {
+            value: 'Portland',
+            text: 'Portland',
+          },
+          {
+            value: 'Halifax',
+            text: 'Halifax',
+          },
+          {
+            value: 'João Pessoa',
+            text: 'João Pessoa',
+          },
+          {
+            value: 'Buenos Aires',
+            text: 'Buenos Aires',
+          },
+          {
+            value: 'New York',
+            text: 'New York',
+          },
+        ],
+      });
     </script>
   </body>
 </html>

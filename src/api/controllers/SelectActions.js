@@ -1,48 +1,28 @@
-import Model from '../models/Model';
-import MultipleSelectView from '../views/MultipleSelectView';
+import Controller from './Controller';
+import MultiSelectModel from '../models/MultiSelectModel';
+import MultiSelectView from '../views/MultiSelectView';
+import SelectModel from '../models/SelectModel';
 import SelectView from '../views/SelectView';
+import { defaultOptions } from '../helpers/ControllerHelpers';
 
 /**
  * @class SelectActions Controller
  *
+ * @param select
  * @param model
  * @param view
  */
-class SelectActions {
-  constructor(select, options = { selectAllButtons: true, maxOptionsTags: 6, optionsData: undefined }) {
-    this.select = select;
-    this.model = new Model();
-    this.view = document.querySelector(`${this.select} select`).multiple ?
-      new MultipleSelectView(this.select, options) :
-      new SelectView(this.select, options);
-
-    // Explicit this binding
-    this.model.bindOptionListChanged(this.onOptionListChanged.bind(this));
-    this.view.bindSelectOption(this.handleSelectOption.bind(this));
-
-    if (options.selectAllButtons) {
-      this.view.bindChangeAllOption(this.handleChangeAllOption.bind(this));
-    }
-    this.view.bindSearchOption(this.handleSearchOption.bind(this));
+class SelectActions extends Controller {
+  constructor(select,
+    config
+  ) {
+    const selectElement = document.querySelector(`${select}`);
+    selectElement.querySelector(`select`).multiple
+      ? super(selectElement, MultiSelectView, MultiSelectModel, { ...defaultOptions, ...config })
+      : super(selectElement, SelectView, SelectModel, { ...defaultOptions, ...config });
 
     // Set initial options to data from HTML select options
-    this.model.options = options.optionsData || this.view.app.options;
-  }
-
-  onOptionListChanged(options) {
-    this.view.render(options);
-  }
-
-  handleSelectOption(value, singleOption) {
-    this.model.selectOption(value, singleOption);
-  }
-
-  handleChangeAllOption(value) {
-    this.model.changeAllOption(value);
-  }
-
-  handleSearchOption(value) {
-    this.model.searchOption(value);
+    this.onOptionListChanged(this.model.options);
   }
 }
 

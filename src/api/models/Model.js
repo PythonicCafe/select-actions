@@ -4,77 +4,57 @@
  * Manages the data of the application.
  */
 class Model {
-  #options = [];
-  #defaultOptions = [];
-
-  get options() {
-    return this.#options;
-  }
-
-  set options(options) {
-    if (options instanceof HTMLOptionsCollection) {
-      this.#options = [...options].map((option) => {
+  constructor(data, config) { 
+    this.config = config;
+    if (data instanceof HTMLOptionsCollection) {
+      this.options = [...data].map((opt) => {
         return {
-          value: option.value,
-          text: option.innerHTML,
-          checked: option.selected,
+          value: opt.value,
+          text: opt.innerHTML,
+          checked: opt.selected,
         };
       });
     } else {
-      this.#options = options;
+      this.options = data.map((opt) => {
+        return { ...opt, checked: opt.checked };
+      });
     }
 
-    this.#defaultOptions = this.#options;
-    this.#commit(this.#options);
+    this.defaultOptions = this.options;
   }
 
   bindOptionListChanged(callback) {
     this.onOptionListChanged = callback;
   }
 
-  #commit(options) {
+  commit(options) {
     this.onOptionListChanged(options);
   }
 
-  selectOption(value, singleOption = false) {
-    if (singleOption) {
-      this.#options = this.#options.map((opt) => { return { value: opt.value, text: opt.text, checked: false } });
-      this.#options.find((opt) => opt.value === value).checked = true;
-      this.#defaultOptions = this.#defaultOptions.map((opt) => { return { value: opt.value, text: opt.text, checked: false } });
-    } else {
-      this.#options = this.#options.map((opt) =>
-        opt.value === value ? { value: opt.value, text: opt.text, checked: !opt.checked } : opt,
-      );
-    }
-
-    this.#defaultOptions = this.#defaultOptions.map((opt) =>
-      opt.value === value ? { value: opt.value, text: opt.text, checked: !opt.checked } : opt,
-    );
-
-    this.#commit(this.#options);
-  }
+  // To be overridden
+  selectOption() {}
 
   changeAllOption(value) {
     let newValue = value === 'all' ? true : false;
 
-    this.#options = this.#options.map((opt) => {
+    this.options = this.options.map((opt) => {
       return { value: opt.value, text: opt.text, checked: newValue };
     });
-    this.#defaultOptions = this.#defaultOptions.map((opt) => {
+    this.defaultOptions = this.defaultOptions.map((opt) => {
       return { value: opt.value, text: opt.text, checked: newValue };
     });
 
-    this.#commit(this.#options);
+    this.commit(this.options);
   }
 
   searchOption(value) {
-    this.#options = this.#defaultOptions;
-    this.#options = this.#options.filter((option) => option.text.includes(value));
+    this.options = this.defaultOptions;
+    this.options = this.options.filter((option) => option.text.includes(value));
 
-    if (this.#options.length === 0) {
-      this.#options = [{ text: 'Nothing found' }];
+    if (this.options.length === 0) {
+      this.options = [{ text: this.config.fieldsTexts.notFoundMessage }];
     }
-    this.#commit(this.#options);
+    this.commit(this.options);
   }
 }
 

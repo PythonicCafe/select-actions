@@ -1,14 +1,13 @@
-import View from "./View";
+import View from './View';
 import { createElement } from '../../utils';
 
-export default class SelectView extends View {
-
-  constructor(select, options){
-    super(select, options);
+class SelectView extends View {
+  constructor(select, config) {
+    super(select, config);
 
     // Single select starts with first element selected
-    if (options.optionsData) {
-      options.optionsData[0].checked = true
+    if (config.optionsData) {
+      config.optionsData[0].checked = true;
     }
   }
 
@@ -19,7 +18,7 @@ export default class SelectView extends View {
     this.getElement('.sa-select').append(selectedOption);
   }
 
-  render(options) {  
+  render(options) {
     // Remove all options
     while (this.optionList.firstChild) {
       this.optionList.removeChild(this.optionList.firstChild);
@@ -39,12 +38,13 @@ export default class SelectView extends View {
 
       const label = createElement('label', ['sa-list-li__label', 'sa-list-li__label--single']);
       label.innerText = option.text;
+      label.tabIndex = 0;
 
       if (option.hasOwnProperty('checked')) {
         if (option.checked) {
           this.app.value = option.value;
           this.selectedOption(option.text, option.value);
-        } 
+        }
       } else {
         label.classList.add('sa-list-li__label--empty');
       }
@@ -73,15 +73,25 @@ export default class SelectView extends View {
     }
   }
 
-
   // Events
   bindSelectOption(handler) {
     this.optionList.addEventListener('click', (event) => {
       if (event.target.tagName == 'LABEL' && event.target.closest('li').dataset.value !== 'undefined') {
         handler(event.target.closest('li').dataset.value, true);
-        this.clearInputSearch();
         this.closeDropdown();
+      }
+    });
+
+    this.getElement('.sa-dropdown').addEventListener('keydown', (event) => {
+      if (event.target.tagName === 'LABEL') {
+        if (event.key === 'Enter') {
+          handler(event.target.closest('li').dataset.value);
+          this.closeDropdown();
+          this.getElement('.sa-select').focus();
+        }
       }
     });
   }
 }
+
+export default SelectView;

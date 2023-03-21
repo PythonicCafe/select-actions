@@ -1,4 +1,4 @@
-import { createElement, convertStringToHTML } from '../../utils';
+import { createElement, convertStringToHTML, trapFocus } from '../../utils';
 import { closeIcon, chevronDownIcon } from '../../icons';
 
 /**
@@ -7,10 +7,10 @@ import { closeIcon, chevronDownIcon } from '../../icons';
  * Visual representation of the model.
  */
 class View {
-  constructor(select, options) {
-    this.select = document.querySelector(select);
+  constructor(select, config) {
+    this.select = select;
     this.app = this.getElement('select');
-    this.options = options;
+    this.config = config;
 
     this.sa = convertStringToHTML(`
     <div class="sa-main-container">
@@ -20,30 +20,29 @@ class View {
         </div>
         <div class="sa-dropdown">
           <div class="sa-search">
-            <input class="sa-search__input" type="text" placeholder="Search" name="search" />
+            <input class="sa-search__input" type="text" placeholder="${this.config.fieldsTexts.searchPlaceholder}" name="search" />
           </div>
           ${
-            options.selectAllButtons
-              ? `<div class="sa-dropdown__buttons">
+            config.selectAllButtons ?
+              `<div class="sa-dropdown__buttons">
                 <button class="sa-dropdown-button sa-button-all" data-value="all">Todos</button>
                 <button class="sa-dropdown-button sa-button-none" data-value="none">Nenhum</button>
-              </div>`
-              : ''
+              </div>` :
+              ''
           }
-          <ul class="sa-dropdown__option-list"></ul>
+          <ul class="sa-dropdown__option-list" tabindex="-1" ></ul>
         </div>
       </div>
     </div>
     `);
-    
+
     // If data comming from optionsData
-    if (options.optionsData) {
-      const genOptions =
-        this.options.optionsData.map(option => 
-         convertStringToHTML(`<option value="${option.value}">${option.text}</option>`)
-        );
- 
-      this.app.append(...genOptions)
+    if (Array.isArray(config.optionsData)) {
+      const genOptions = this.config.optionsData.map((option) =>
+        convertStringToHTML(`<option value="${option.value}">${option.text}</option>`),
+      );
+
+      this.app.append(...genOptions);
     }
 
     this.app.parentElement.insertBefore(this.sa, this.app);
@@ -65,18 +64,37 @@ class View {
     });
 
     this.getElement('.sa-select').addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' || event.key === 'Tab') {
+      if (event.key === 'Escape' || event.key === 'Tab' || event.key === 'Shift') {
         return;
       }
 
-      this.openDropdown();
+      if (event.target.tagName !== 'BUTTON') {
+        this.openDropdown();
+      }
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        this.getElement('.sa-list-li__label').focus();
+      }
     });
 
-    this.getElement('.sa-search').addEventListener('keydown', (event) => {
+    this.dropdown.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         this.closeDropdown();
         this.getElement('.sa-select').focus();
-        return;
+      }
+    });
+
+    this.getElement('.sa-dropdown').addEventListener('keydown', (event) => {
+      if (event.target.tagName === 'LABEL') {
+        const label = `[data-value='${event.target.closest('li').dataset.value}'] label`;
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          this.findTabStop('.sa-dropdown__option-list', label).focus();
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          this.findTabStop('.sa-dropdown__option-list', label, false).focus();
+        }
       }
     });
   }
@@ -90,20 +108,20 @@ class View {
   openDropdown() {
     this.dropdown.style.display = 'block';
     this.inputSearch.focus();
+    trapFocus(this.dropdown);
 
     // Blur to clickout close dropdown
     const blur = createElement('div', 'sa-blur');
     this.mainContainer.append(blur);
 
-    blur.addEventListener('click', (event) => {
-      this.dropdown.style.display = 'none';
-      this.mainContainer.removeChild(event.target);
-      this.clearInputSearch();
+    blur.addEventListener('click', () => {
+      this.closeDropdown();
     });
   }
 
   closeDropdown() {
     this.dropdown.style.display = 'none';
+    this.clearInputSearch();
     const blur = this.getElement('.sa-blur');
     if (blur) {
       blur.remove();
@@ -115,8 +133,21 @@ class View {
     return element;
   }
 
+  findTabStop(universe, selector, next = true) {
+    const element = this.getElement(selector);
+    const container = this.select.querySelector(universe).querySelectorAll(element.tagName);
+    const list = Array.prototype.filter.call(container, (item) => item.tabIndex >= '0');
+    const index = list.indexOf(element);
+
+    if (next) {
+      return list[index + 1] || list[0];
+    }
+
+    return list[index - 1] || list[list.length - 1];
+  }
+
   hideSelectButtonsAll(hide) {
-    if (this.options.selectAllButtons) {
+    if (this.config.selectAllButtons) {
       this.getElement('.sa-dropdown__buttons').style.display = hide ? 'none' : 'flex';
     }
   }
@@ -132,14 +163,20 @@ class View {
     return buttonClear;
   }
 
-
-  // to be overrided
-  render(){}
+  // to be overridden
+  render() {}
 
   // Events bind
   bindSearchOption(handler) {
     this.inputSearch.addEventListener('input', (event) => {
       handler(event.target.value);
+    });
+
+    this.inputSearch.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        this.getElement('.sa-list-li__label').focus();
+      }
     });
   }
 }

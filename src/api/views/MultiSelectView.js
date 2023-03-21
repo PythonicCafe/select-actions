@@ -1,15 +1,17 @@
-import View from "./View";
-import { createElement } from '../../utils';
+import View from './View';
+import { createElement, trapFocus } from '../../utils';
 
-export default class MultipleSelectView extends View {
-
-  constructor(select, options) {
-    super(select, options);
+class MultiSelectView extends View {
+  constructor(select, config) {
+    super(select, config);
   }
 
   selectedOption(text, value) {
     const selectedOption = createElement('div', 'sa-selected-option');
-    selectedOption.innerHTML = text;
+    const span = createElement('span', 'sa-selected-option__span');
+    span.title = text;
+    span.innerHTML = text;
+    selectedOption.append(span);
     selectedOption.dataset.value = value;
     selectedOption.append(this.buttonClear());
     this.getElement('.sa-select').append(selectedOption);
@@ -17,11 +19,11 @@ export default class MultipleSelectView extends View {
 
   selectedOptionCounter(length) {
     const selectedOption = createElement('div', ['sa-selected-option', 'sa-selected-option--counter']);
-    selectedOption.innerHTML = length + " selected";
+    selectedOption.innerHTML = length + ' selected';
     this.getElement('.sa-select').append(selectedOption);
   }
 
-  render(options) {  
+  render(options) {
     // Remove all options
     while (this.optionList.firstChild) {
       this.optionList.removeChild(this.optionList.firstChild);
@@ -34,8 +36,8 @@ export default class MultipleSelectView extends View {
       this.getElement('.sa-selected__span').remove();
     }
 
-    const checkedOptionsLength = options.filter(x => x.checked == true).length;
-    const displayCounter = checkedOptionsLength > this.options.maxOptionsTags;
+    const checkedOptionsLength = options.filter((x) => x.checked == true).length;
+    const displayCounter = checkedOptionsLength > this.config.maxOptionsTags;
     if (displayCounter) {
       this.selectedOptionCounter(checkedOptionsLength);
     }
@@ -47,18 +49,20 @@ export default class MultipleSelectView extends View {
 
       const label = createElement('label', 'sa-list-li__label');
       label.innerText = option.text;
+      label.tabIndex = 0;
 
       if (option.hasOwnProperty('checked')) {
         const input = createElement('input', 'sa-list-li__checkbox');
         input.type = 'checkbox';
         input.id = option.value;
         input.checked = option.checked;
+        input.tabIndex = -1;
         this.app.querySelector(`option[value='${option.value}']`).selected = option.checked;
         label.prepend(input);
 
         if (option.checked && !displayCounter) {
           this.selectedOption(option.text, option.value);
-        } 
+        }
       } else {
         label.classList.add('sa-list-li__label--empty');
       }
@@ -71,7 +75,7 @@ export default class MultipleSelectView extends View {
     if (!this.getElement('.sa-selected-option')) {
       // Select label create and add
       const span = createElement('span', 'sa-selected__span');
-      span.innerText = 'Select';
+      span.innerText = this.config.fieldsTexts.selectPlaceholder;
       this.getElement('.sa-select').append(span);
     }
 
@@ -85,8 +89,12 @@ export default class MultipleSelectView extends View {
       this.hideSelectButtonsAll(false);
       clearButton.remove();
     }
-  }
 
+    // If dropdown opened trapfocus
+    if (this.dropdown.style.display === 'block') {
+      trapFocus(this.dropdown);
+    }
+  }
 
   // Events bind
 
@@ -105,6 +113,28 @@ export default class MultipleSelectView extends View {
         handler(event.target.closest('.sa-selected-option').dataset.value);
       }
     });
+
+    this.getElement('.sa-select').addEventListener('keydown', (event) => {
+      event.stopPropagation();
+      if (
+        event.key === 'Enter' &&
+        event.target.closest('button') &&
+        [...event.target.closest('button').classList].includes('sa-button__clear')
+      ) {
+        handler(event.target.closest('.sa-selected-option').dataset.value);
+        this.getElement('.sa-select').focus();
+      }
+    });
+
+    this.getElement('.sa-dropdown').addEventListener('keydown', (event) => {
+      if (event.target.tagName === 'LABEL') {
+        const label = `[data-value='${event.target.closest('li').dataset.value}'] label`;
+        if (event.key === 'Enter') {
+          handler(event.target.closest('li').dataset.value);
+          this.getElement(label).focus();
+        }
+      }
+    });
   }
 
   bindChangeAllOption(handler) {
@@ -114,3 +144,5 @@ export default class MultipleSelectView extends View {
     });
   }
 }
+
+export default MultiSelectView;
