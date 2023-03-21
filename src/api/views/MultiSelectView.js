@@ -1,9 +1,17 @@
 import View from './View';
-import { createElement, trapFocus } from '../../utils';
+import { createElement, convertStringToHTML, trapFocus } from '../../utils';
 
 class MultiSelectView extends View {
   constructor(select, config) {
     super(select, config);
+
+    if (this.config.selectAllButtons) {
+     const buttons = convertStringToHTML(`<div class="sa-dropdown__buttons">
+        <button class="sa-dropdown-button sa-button-all" data-value="all">Todos</button>
+        <button class="sa-dropdown-button sa-button-none" data-value="none">Nenhum</button>
+      </div>`);
+      this.dropdown.insertBefore(buttons, this.getElement(".sa-dropdown__option-list"))
+    }
   }
 
   selectedOption(text, value) {

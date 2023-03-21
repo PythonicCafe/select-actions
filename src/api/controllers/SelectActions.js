@@ -17,12 +17,20 @@ class SelectActions extends Controller {
     config
   ) {
     const selectElement = document.querySelector(`${select}`);
-    selectElement.querySelector(`select`).multiple
-      ? super(selectElement, MultiSelectView, MultiSelectModel, { ...defaultOptions, ...config })
-      : super(selectElement, SelectView, SelectModel, { ...defaultOptions, ...config });
+    const isMulti = selectElement.querySelector(`select`).multiple;
+    if (isMulti) {
+      super(selectElement, MultiSelectView, MultiSelectModel, { ...defaultOptions, ...config });
+      if (this.options.selectAllButtons) {
+        this.view.bindChangeAllOption(this.handleChangeAllOption.bind(this));
+      }
+    }
+    else { 
+      super(selectElement, SelectView, SelectModel, { ...defaultOptions, ...config });
+    }
 
     // Set initial options to data from HTML select options
     this.onOptionListChanged(this.model.options);
+
   }
 }
 

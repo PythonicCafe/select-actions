@@ -22,14 +22,6 @@ class View {
           <div class="sa-search">
             <input class="sa-search__input" type="text" placeholder="${this.config.fieldsTexts.searchPlaceholder}" name="search" />
           </div>
-          ${
-            config.selectAllButtons ?
-              `<div class="sa-dropdown__buttons">
-                <button class="sa-dropdown-button sa-button-all" data-value="all">Todos</button>
-                <button class="sa-dropdown-button sa-button-none" data-value="none">Nenhum</button>
-              </div>` :
-              ''
-          }
           <ul class="sa-dropdown__option-list" tabindex="-1" ></ul>
         </div>
       </div>

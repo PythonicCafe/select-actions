@@ -1,6 +1,6 @@
 // TODO: Add styles customizations as options like width and height
 export const defaultOptions = {
-  selectAllButtons: false,
+  selectAllButtons: true,
   maxOptionsTags: 6,
   optionsData: undefined,
   fieldsTexts : {

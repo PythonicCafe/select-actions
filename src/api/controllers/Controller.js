@@ -16,9 +16,6 @@ class Controller {
     this.model.bindOptionListChanged(this.onOptionListChanged.bind(this));
     this.view.bindSelectOption(this.handleSelectOption.bind(this));
 
-    if (this.options.selectAllButtons) {
-      this.view.bindChangeAllOption(this.handleChangeAllOption.bind(this));
-    }
     this.view.bindSearchOption(this.handleSearchOption.bind(this));
 
   }
